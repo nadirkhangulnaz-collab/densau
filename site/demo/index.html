@@ -1,0 +1,1345 @@
+<!doctype html>
+<html lang="kk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DenSau</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap">
+<style>
+/* Layout: one phone-width column with a fixed three-tab bar. Teal and coral on warm paper, from the team's mockup. */
+:root{
+  --paper:#F5F2EA; --card:#FFFFFF; --ink:#1B231F; --muted:#5A6A63;
+  --line:rgba(27,35,31,.10); --line-strong:rgba(27,35,31,.28); --chip:#EDEAE0;
+  --teal:#0E6E5C; --teal-deep:#0A5346; --teal-ink:#0E6E5C; --teal-tint:#D8ECE4; --on-teal:#FFFFFF;
+  --coral:#C84B22; --coral-tint:#FBE2D8; --on-coral:#FFFFFF;
+  --shadow:0 14px 30px -18px rgba(14,110,92,.45);
+  --font-display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1512; --card:#16221D; --ink:#EAF1EC; --muted:#9DB0A6;
+    --line:rgba(234,241,236,.12); --line-strong:rgba(234,241,236,.34); --chip:#22302A;
+    --teal:#1F8A74; --teal-deep:#146B5A; --teal-ink:#63D3B8; --teal-tint:#173A31; --on-teal:#FFFFFF;
+    --coral:#F0825C; --coral-tint:#3A2018; --on-coral:#1B120E;
+    --shadow:0 14px 30px -18px rgba(0,0,0,.8); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1512; --card:#16221D; --ink:#EAF1EC; --muted:#9DB0A6;
+  --line:rgba(234,241,236,.12); --line-strong:rgba(234,241,236,.34); --chip:#22302A;
+  --teal:#1F8A74; --teal-deep:#146B5A; --teal-ink:#63D3B8; --teal-tint:#173A31; --on-teal:#FFFFFF;
+  --coral:#F0825C; --coral-tint:#3A2018; --on-coral:#1B120E;
+  --shadow:0 14px 30px -18px rgba(0,0,0,.8); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--font-body); font-size:15px; line-height:1.45;
+  padding-block:18px 128px;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--teal-ink);outline-offset:2px}
+.ic{flex-shrink:0}
+.app{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:-.01em}
+.brand b{color:var(--teal-ink)}
+.mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(155deg,var(--teal),var(--teal-deep));display:grid;place-items:center;color:#fff;font-size:17px}
+.today-label{font-size:13px;color:var(--muted);font-weight:600;text-align:right}
+
+.greet small{display:block;color:var(--muted);font-weight:500;font-size:13px}
+.greet h1{margin:2px 0 0;font-family:var(--font-display);font-size:26px;line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
+
+/* progress */
+.progress{background:linear-gradient(155deg,var(--teal),var(--teal-deep));border-radius:22px;padding:18px 20px;color:#fff;box-shadow:var(--shadow)}
+.progress .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.progress .t{font-weight:600;font-size:14px;opacity:.92}
+.progress .n{font-family:var(--font-display);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:8px;background:rgba(255,255,255,.25);overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;border-radius:8px;transition:width .4s ease}
+.progress p{margin:12px 0 0;font-size:13px;opacity:.9}
+
+/* sections */
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.sec-h h2{margin:0;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
+
+/* week strip */
+.wk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.day{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.day small{font-size:11.5px;color:var(--muted);font-weight:600}
+.dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.dot.full{background:var(--teal);color:var(--on-teal)}
+.dot.part{background:var(--teal-tint);color:var(--teal-ink);box-shadow:inset 0 0 0 2px var(--teal)}
+.dot.miss{background:var(--coral-tint);color:var(--coral);box-shadow:inset 0 0 0 2px var(--coral)}
+.dot.wait{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--teal)}
+.dot.none{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.day.now small{color:var(--ink)}
+.day.now .dot{outline:2px solid var(--ink);outline-offset:2px}
+.cnt{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+/* doses */
+.list{display:flex;flex-direction:column;gap:10px}
+.dose{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px}
+.dose.late{border-color:var(--coral)}
+.pill-ic{width:42px;height:42px;border-radius:12px;background:var(--teal-tint);color:var(--teal-ink);display:grid;place-items:center}
+.dose.due .pill-ic,.dose.late .pill-ic{background:var(--coral-tint);color:var(--coral)}
+.dose-main{flex:1;min-width:0}
+.dose-name{font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.dose-meta{font-size:12.5px;color:var(--muted);margin-top:1px;overflow-wrap:anywhere}
+.dose-meta b{color:var(--ink);font-variant-numeric:tabular-nums}
+.check{width:32px;height:32px;border-radius:50%;border:2px solid var(--line-strong);background:transparent;display:grid;place-items:center;color:transparent;padding:0;flex-shrink:0}
+.check.on{background:var(--teal);border-color:var(--teal);color:var(--on-teal)}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;background:var(--teal);color:var(--on-teal);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.coral{background:var(--coral);color:var(--on-coral)}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn.block{width:100%;padding:14px;font-size:15px;border-radius:14px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.link{background:none;border:0;padding:4px 0;font-size:13px;font-weight:600;color:var(--teal-ink);text-decoration:underline;text-underline-offset:3px}
+
+.empty{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;padding:28px 18px}
+.empty h3{margin:0;font-family:var(--font-display);font-size:18px}
+.empty p{margin:0;color:var(--muted);font-size:14px}
+
+.note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.note.pad{padding:0 4px}
+.chipnote{display:inline-flex;align-items:center;gap:8px;background:var(--chip);border-radius:100px;padding:6px 8px 6px 12px;font-size:12px;font-weight:600;color:var(--muted);align-self:flex-start}
+.chipnote button{background:var(--card);border:1px solid var(--line);border-radius:100px;padding:3px 10px;font-size:12px;font-weight:600}
+
+/* add view */
+.h-title{margin:0;font-family:var(--font-display);font-size:24px;letter-spacing:-.015em}
+.h-sub{margin:4px 0 0;color:var(--muted);font-size:14px}
+.scan{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;border:2px dashed var(--teal);background:var(--teal-tint);border-radius:22px;padding:30px 18px;cursor:pointer}
+.scan:focus-within{outline:3px solid var(--teal-ink);outline-offset:2px}
+.scan input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.scan .big{width:54px;height:54px;border-radius:16px;background:var(--teal);color:var(--on-teal);display:grid;place-items:center;margin-bottom:6px}
+.scan b{font-size:16px}
+.scan span{font-size:13px;color:var(--muted)}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.05em}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.reading{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.reading img,.preview{width:100%;max-height:220px;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+.scanline{position:relative;width:100%}
+.scanline::after{content:"";position:absolute;left:0;right:0;height:3px;background:var(--teal);box-shadow:0 0 18px 4px var(--teal);border-radius:3px;animation:sweep 1.8s ease-in-out infinite alternate}
+@keyframes sweep{from{top:6%}to{top:92%}}
+.spin{width:20px;height:20px;border-radius:50%;border:3px solid var(--teal-tint);border-top-color:var(--teal);animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.alert{display:flex;gap:10px;align-items:flex-start;background:var(--coral-tint);color:var(--ink);border-radius:16px;padding:12px 14px;font-size:13.5px}
+.alert .ic{color:var(--coral);margin-top:2px}
+.alert.info{background:var(--teal-tint)}
+.alert.info .ic{color:var(--teal-ink)}
+.med-edit{display:flex;flex-direction:column;gap:12px}
+.med-edit .head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.badge{font-size:12px;font-weight:700;border-radius:100px;padding:4px 10px}
+.badge.ok{background:var(--teal-tint);color:var(--teal-ink)}
+.badge.warn{background:var(--coral-tint);color:var(--coral)}
+.badge.man{background:var(--chip);color:var(--muted)}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label,.lbl{font-size:12px;font-weight:700;color:var(--muted)}
+.inp{width:100%;background:var(--paper);border:1px solid var(--line-strong);border-radius:12px;padding:11px 13px;font-size:15px}
+.two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px}
+.times{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tchip{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--teal);color:var(--on-teal);border-radius:100px;padding:7px 8px 7px 14px;font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.tchip .ic{opacity:.85}
+.tadd{display:flex;gap:6px;align-items:center}
+.tadd .inp{width:112px;padding:8px 10px;font-size:14px}
+.sm{padding:8px 12px;font-size:13px}
+.inc{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px}
+.inc input{width:20px;height:20px;accent-color:var(--teal)}
+.confirm{display:flex;gap:12px;align-items:flex-start;font-size:14px;font-weight:600;line-height:1.4;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.confirm input{width:22px;height:22px;margin-top:1px;accent-color:var(--teal);flex-shrink:0}
+
+/* relative view */
+.who{display:flex;align-items:center;gap:14px}
+.avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(155deg,#F2B79A,#E8623A);display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:700;font-size:18px;flex-shrink:0}
+.who b{display:block;font-size:17px;font-family:var(--font-display)}
+.who span{font-size:13px;color:var(--muted)}
+.status{display:flex;flex-direction:column;gap:6px;border-radius:20px;padding:16px 18px}
+.status.ok{background:var(--teal-tint);color:var(--ink)}
+.status.warn{background:var(--coral-tint)}
+.status b{font-family:var(--font-display);font-size:18px;line-height:1.25}
+.status span{font-size:13.5px;color:var(--muted)}
+.tag{font-size:12px;font-weight:700;border-radius:100px;padding:5px 11px;white-space:nowrap}
+.tag.ok{background:var(--teal);color:var(--on-teal)}
+.tag.wait{background:var(--chip);color:var(--muted)}
+.tag.late{background:var(--coral);color:var(--on-coral)}
+
+/* tabbar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);
+  padding-top:8px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.tabbar .in{max-width:440px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tab{background:none;border:0;border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--muted)}
+.tab[aria-current="page"]{color:var(--teal-ink);background:var(--teal-tint)}
+.tab.add .ic{background:var(--teal);color:var(--on-teal);border-radius:10px;padding:5px;width:30px;height:30px}
+.tab.add[aria-current="page"] .ic{background:var(--teal-deep)}
+
+/* oraza + journal */
+.oraza{display:flex;flex-direction:column;gap:12px}
+.oraza .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.oraza .row>div{min-width:0}
+.oraza h3{margin:0;font-family:var(--font-display);font-size:16px}
+.oraza p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+.oraza.on{border-color:var(--teal);background:var(--teal-tint)}
+.t2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.t3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--chip);border-radius:14px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;border-radius:11px;padding:10px;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--font-body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .l1{fill:none;stroke:var(--teal-ink);stroke-width:2.5;stroke-linejoin:round}
+.chart .l2{fill:none;stroke:var(--coral);stroke-width:2.5;stroke-dasharray:6 4;stroke-linejoin:round}
+.chart .m1{fill:var(--teal-ink)}
+.chart .m2{fill:var(--coral)}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.stat{background:var(--paper);border-radius:14px;padding:10px 12px}
+.stat small{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.stat b{font-family:var(--font-display);font-size:17px;font-variant-numeric:tabular-nums}
+.entry{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px}
+.entry .m{flex:1;min-width:0}
+.entry .v{font-family:var(--font-display);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
+.entry small{display:block;color:var(--muted);font-size:12.5px}
+.x{border:0;background:var(--chip);color:var(--muted);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;padding:0;flex-shrink:0}
+/* menu drawer */
+.top .right{display:flex;align-items:center;gap:10px}
+.menubtn{border:0;background:var(--chip);color:var(--ink);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;padding:0;flex-shrink:0}
+.scrim{position:fixed;inset:0;z-index:60;background:rgba(10,20,16,.55);display:flex;justify-content:flex-end}
+.sheet{width:min(360px,92vw);height:100%;background:var(--paper);overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));padding-left:16px;padding-right:max(16px,env(safe-area-inset-right,0px));animation:slidein .25s ease}
+@keyframes slidein{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sh h2{margin:0;font-family:var(--font-display);font-size:20px}
+.menu-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.menu-item .t{flex:1;min-width:0}
+.menu-item b{display:block;font-size:15px}
+.menu-item small{display:block;color:var(--muted);font-size:12.5px}
+.about li{margin-bottom:8px}
+.about{margin:0;padding-left:18px;font-size:14px}
+.wknav{display:flex;gap:8px}
+.wknav .x{font-size:20px;line-height:1;padding-bottom:2px}
+.x[disabled]{opacity:.35;cursor:not-allowed}
+body.onb .tabbar{display:none}
+body.onb{padding-bottom:32px}
+.ob{display:flex;flex-direction:column;gap:16px}
+.ob h1{margin:0;font-family:var(--font-display);font-size:26px;line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
+.docrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.docrow .m{flex:1;min-width:0}
+.docrow b{display:block;font-size:14.5px}
+.docrow small{color:var(--muted);font-size:12.5px}
+.confirm.dis{opacity:.55}
+.doc h2{margin:12px 0 6px;font-family:var(--font-display);font-size:22px}
+.doc h3{margin:16px 0 4px;font-size:14.5px}
+.doc p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.msgbox{width:100%;min-height:210px;resize:vertical;line-height:1.5}
+.askrow{display:flex;gap:8px;flex-wrap:wrap}
+.askrow .btn{flex:1}
+a.btn{text-decoration:none}
+.wel{min-height:calc(100vh - 70px);min-height:calc(100dvh - 70px);display:flex;flex-direction:column;justify-content:center;gap:28px;text-align:center}
+.wel .mark{width:76px;height:76px;font-size:36px;border-radius:24px;margin:0 auto 14px}
+.wel h1{margin:0;font-family:var(--font-display);font-size:38px;letter-spacing:-.02em}
+.wel h1 b{color:var(--teal-ink)}
+.wel-btns{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.steps{display:flex;gap:6px}
+.steps i{flex:1;height:4px;border-radius:4px;background:var(--chip)}
+.steps i.on{background:var(--teal)}
+.cm-scrim{position:fixed;inset:0;z-index:70;background:rgba(10,20,16,.58);display:flex;align-items:center;justify-content:center;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.cm{background:var(--card);border-radius:22px;width:min(100%,540px);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+.cm-bar{height:4px;background:var(--chip);flex-shrink:0}
+.cm-bar i{display:block;height:100%;width:0;background:var(--teal);transition:width .15s}
+.cm-body{overflow-y:auto;padding:16px 20px;flex:1;min-height:0;-webkit-overflow-scrolling:touch}
+.cm-foot{padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.cm-foot .note{text-align:center}
+.cm-acts{display:flex;gap:10px}
+.cm-acts .btn{flex:1}
+.doc a{color:var(--teal-ink);word-break:break-all}
+.mini{margin:0 0 4px;font-size:14px;font-family:var(--font-display)}
+.prof{padding:4px 2px 8px}
+.who span{display:block;color:var(--muted);font-size:13px}
+.relcard{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.relcard .t{flex:1;min-width:0}.relcard b{display:block;font-size:14.5px}.relcard small{color:var(--muted);font-size:12.5px}
+.avatar.sm{width:38px;height:38px;font-size:16px}
+.faq b{display:block}
+.bd{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr) minmax(0,1fr);gap:8px}
+.docnote{margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}
+.lockcard{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.lockcard .t{flex:1;min-width:0}.lockcard b{display:block;font-size:14.5px}.lockcard small{color:var(--muted);font-size:12.5px;display:block}
+.plan .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.plan h3{margin:0;font-family:var(--font-display);font-size:22px}
+.plan small{color:var(--muted);font-size:12.5px}
+.plan .price{font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--teal-ink);text-align:right}
+.plan.on{border-color:var(--teal)}
+.cmp{padding:6px 14px}
+.cmph,.cmpr{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;gap:8px;align-items:center;padding:9px 0;font-size:13.5px}
+.cmph{font-size:12.5px;color:var(--muted)}.cmph b{text-align:center}
+.cmpr{border-top:1px solid var(--line)}.cmpr>span:not(:first-child){text-align:center;font-size:12.5px;color:var(--muted)}
+.cmpr .yes{color:var(--teal-ink);display:flex;justify-content:center}
+.paym{margin-bottom:8px;text-align:left}
+.paym[aria-pressed=true]{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal)}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-strong);flex-shrink:0}
+.radio.on{border-color:var(--teal);background:radial-gradient(circle,var(--teal) 45%,transparent 50%)}
+.sumrow{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--line);font-size:14.5px}
+.stk{padding:10px 0;border-top:1px solid var(--line)}.stk:first-child{border-top:0;padding-top:0}.stk b{display:block;margin-bottom:8px;font-size:14.5px}
+.note.warn{color:var(--coral);font-weight:600}
+.msgbox.tall{min-height:260px}
+/* reminder + toast */
+.ov{position:fixed;left:0;right:0;top:0;z-index:40;display:flex;justify-content:center;pointer-events:none;
+  padding-top:calc(14px + env(safe-area-inset-top,0px));padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+.notif{pointer-events:auto;width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 24px 50px -14px rgba(0,0,0,.45);animation:drop .35s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes drop{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
+.notif .nh{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.notif .nh .mark{width:24px;height:24px;border-radius:7px;font-size:12px}
+.notif h3{margin:0 0 3px;font-size:17px;font-family:var(--font-display)}
+.notif p{margin:0 0 14px;color:var(--muted);font-size:14px}
+.notif .acts{display:flex;gap:8px}
+.notif .acts .btn{flex:1;padding:12px}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:80;background:var(--ink);color:var(--paper);border-radius:100px;padding:10px 18px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.langsw{display:inline-flex;gap:2px;background:var(--chip);border-radius:999px;padding:3px;align-self:flex-end;margin-bottom:4px}.langsw button{border:0;background:transparent;color:var(--muted);font:600 12px/1 var(--font-body,inherit);letter-spacing:.04em;padding:7px 12px;border-radius:999px;cursor:pointer}.langsw button[aria-pressed="true"]{background:var(--teal);color:var(--on-teal)}
+</style>
+
+<div class="app" id="app"></div>
+
+<nav class="tabbar" aria-label="Негізгі мәзір"><div class="in" id="tabs"></div></nav>
+<div class="ov" id="ov"></div>
+<div id="drawer"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+var RU={"Жс":"Вс","Дс":"Пн","Сс":"Вт","Ср":"Ср","Бс":"Чт","Жм":"Пт","Сб":"Сб","қаңтар":"января","ақпан":"февраля","наурыз":"марта","сәуір":"апреля","мамыр":"мая","маусым":"июня","шілде":"июля","тамыз":"августа","қыркүйек":"сентября","қазан":"октября","қараша":"ноября","желтоқсан":"декабря","Метформин":"Метформин","500 мг":"500 мг","таңертең":"утром","Аспирин":"Аспирин","100 мг":"100 мг","түскі ас кезінде":"во время обеда","Витамин D":"Витамин D","кешке":"вечером","Аш қарынға":"натощак","Айгерім":"Айгерім","Қайырлы түн":"Доброй ночи","Қайырлы таң":"Доброе утро","Қайырлы күн":"Добрый день","Қайырлы кеш":"Добрый вечер","Осы апта":"Эта неделя","Өткен апта":"Прошлая неделя","Апта":"Неделя","бәрі ішілді":"всё принято","бір бөлігі":"частично","ұмытылды":"пропущено"," · әдетте ":" · обычно "," ішілді":" принято","Ішілді":"Принято","Ішпеді":"Не принято","Уақыты келді":"Пора принять","Күтілуде":"Ожидается","\" aria-label=\"Белгіні алып тастау: ":"\" aria-label=\"Снять отметку: ","\">Іштім":"\">Принял(а)","\" aria-label=\"Ішілді деп белгілеу: ":"\" aria-label=\"Отметить как принятое: ","Кесте бос":"Расписание пусто","Бүгінгі дәрілердің бәрі ішілді":"Все лекарства на сегодня приняты","Ұмытылған дәрі бар, ішуді ұмытпаңыз":"Есть пропущенное лекарство, не забудьте принять","Келесі дәрінің уақытын қадағалаймыз":"Следим за временем следующего лекарства","Достым":"Друг","Дәрі таусылып барады:":"Лекарство заканчивается:"," күн)":" дн.)","Қорды қарау":"Посмотреть запас","<button class=\"x\" data-act=\"wk-prev\" aria-label=\"Алдыңғы апта\"":"<button class=\"x\" data-act=\"wk-prev\" aria-label=\"Предыдущая неделя\"","<button class=\"x\" data-act=\"wk-next\" aria-label=\"Келесі апта\"":"<button class=\"x\" data-act=\"wk-next\" aria-label=\"Следующая неделя\"","Бүгінгі дәрілер":"Лекарства на сегодня","Кестеңіз әзірге бос":"Расписание пока пусто","Рецептің фотосын түсіріңіз, AI дәрілерді тауып, кесте құрады.":"Сфотографируйте рецепт, ИИ найдёт лекарства и составит расписание."," Дәрі қосу":" Добавить лекарство","Бүгінгі кесте":"Расписание на сегодня","Еске салуды көрсету":"Показать напоминание","Дәрі туралы сұрақ":"Вопрос о лекарстве","Дәрі бітті ме немесе сұрағыңыз бар ма? Дәрігерге жіберуге дайын хабар жасаймыз.":"Закончилось лекарство или есть вопрос? Подготовим сообщение, готовое к отправке врачу.","Жазу":"Написать","Көрсетілген деректер үлгі ":"Показаны демонстрационные данные ","Тазалап, өзімдікін қосу":"Очистить и добавить свои","DenSau диагноз қоймайды және ем тағайындамайды. Дәрі мен дозаны дәрігер тағайындаған рецептке сүйеніп енгізіңіз.":"DenSau не ставит диагноз и не назначает лечение. Вводите лекарства и дозы по рецепту, назначенному врачом.","Пациент":"Пациент","Туыс көрінісі, тек қарау":"Вид для родственника, только просмотр","Қамқор туыс қосылмаған":"Родственник-опекун не добавлен","Баптаулар бөлімінен қосыңыз":"Добавьте в разделе «Настройки»","Қосу":"Добавить","Қадағалайтын дәрі жоқ":"Нет лекарств для наблюдения","Пациент дәрі қосқанда, бұл жерде бүгінгі қабылдау көрінеді.":"Когда пациент добавит лекарства, здесь появится сегодняшний приём."," дәрісін әлі ішкен жоқ":" — приём ещё не отмечен",". Хабарласып, ескертіп қойыңыз.":". Свяжитесь и напомните."," дәрі ішілді":" принято","Ұмытылған дәрі жоқ":"Пропущенных лекарств нет","Бүгін":"Сегодня","Осы аптада":"На этой неделе","Демода пациент пен туыс бір құрылғыда көрінеді. Нақты қосымшада туыс өз телефонында, пациенттің рұқсатымен көреді.":"В демо пациент и родственник видны на одном устройстве. В настоящем приложении родственник смотрит на своём телефоне, с разрешения пациента.","Сол күні дәрі: ":"За день принято: ","Ораза режимі қосулы":"Режим Ораза включён","Сәрі ":"Сухур ",", ауызашар ":", ифтар ",". Күндізгі дәрілер осы уақытқа ауыстырылды.":". Дневные лекарства перенесены на это время.","Баптау":"Настроить",". Күндізгі дәрілер осы уақытқа ауыстырылған, «әдетте» деген белгіде бастапқы уақыты көрінеді.":". Дневные лекарства перенесены на это время, в пометке «обычно» видно исходное время.","Режимді өшіру":"Выключить режим","Ораза режимі":"Режим Ораза","Ораза кезінде дәрі уақытын ауыстыру Premium жоспарында.":"Перенос времени лекарств во время Ораза доступен в плане Premium.","Ораза уақытының ішінде түсетін дәрілер сәріге немесе ауызашарға ауысады. Қосылғанда ғана басты бетте көрінеді.":"Лекарства, выпадающие на время поста, переносятся на сухур или ифтар. На главной странице показывается только когда режим включён.","Сәрі уақыты":"Время сухура","Ауызашар уақыты":"Время ифтара","DenSau ораза ұстау туралы кеңес бермейді. Дәрі уақытын өзгертуді алдымен дәрігермен немесе фармацевтпен келісіңіз.":"DenSau не даёт советов о соблюдении поста. Изменение времени приёма лекарств сначала согласуйте с врачом или фармацевтом.","Дәрі уақытын дәрігермен келістім":"Я согласовал(а) время приёма лекарств с врачом","Бас тарту":"Отмена","Банк картасы":"Банковская карта","Дәрі кестесі, күнтізбе, ескерту":"Расписание лекарств, календарь, напоминания","Фотодан дәрі тану":"Распознавание лекарств по фото"," рет":" раза","шексіз":"без лимита","Денсаулық журналына жазу":"Запись в журнал здоровья","Журнал графигі":"График журнала","Туыс көрінісі":"Вид для родственника","Дәрі туралы хабарды ИИ-мен жазу":"Сообщение о лекарстве с помощью ИИ","Қабылдауға дайындық (ИИ)":"Подготовка к приёму (ИИ)","Дәрі қоры және таусылу болжамы":"Запас лекарств и прогноз окончания","Дәрігермен байланыс":"Связь с врачом","жақында":"скоро","Сіздің жоспарыңыз":"Ваш план","Тегін":"Бесплатно","/ай":"/мес","Демо төлем":"Демо-оплата",": нақты ақша алынбаған.":": реальные деньги не списаны."," Қосылған күн: ":" Дата подключения: ","Фото тану: ":"Распознавание по фото: "," қолданылды.":" использовано.","Жазылымды тоқтату":"Отменить подписку","Төлем тәсілі":"Способ оплаты","Kaspi қосымшасы арқылы төлеу":"Оплата через приложение Kaspi","Premium, 1 ай":"Premium, 1 месяц","Бұл демо төлем: нақты ақша алынбайды, карта нөмірі мен басқа төлем деректері сұралмайды. Нақты төлем жүйесі кейінгі нұсқада қосылады.":"Это демо-оплата: реальные деньги не списываются, номер карты и другие платёжные данные не запрашиваются. Настоящая платёжная система будет добавлена в следующей версии.",">Бас тарту":">Отмена","Өңделуде…":"Обработка…","Төлеу · ":"Оплатить · "," Premium қосу · ":" Подключить Premium · "," / ай":" / мес","Жоспар шарттары жобаның бизнес-моделін көрсетеді. Бағасы мен құрамы нақты сынақтан кейін нақтыланады.":"Условия плана отражают бизнес-модель проекта. Цена и состав будут уточнены после реальной проверки.","Таңдаңыз":"Выберите","Профиль":"Профиль","Атыңыз":"Ваше имя","Телефон":"Телефон","Қала":"Город","Жынысы":"Пол","Әйел":"Женский","Еркек":"Мужской","Көрсеткім келмейді":"Не хочу указывать","Қамқор туыс":"Родственник-опекун","Аты":"Имя","Ол сізге кім":"Кем он вам приходится","Телефоны":"Телефон","Туыстың деректерін оның келісімімен енгізіңіз. Бос қалдырсаңыз, туыс өшіріледі.":"Вводите данные родственника с его согласия. Если оставить пустым, родственник будет удалён.","Сақтау":"Сохранить","Құпиясөз ауыстыру":"Смена пароля","Ағымдағы құпиясөз":"Текущий пароль","Жаңа құпиясөз (кемінде 6 таңба)":"Новый пароль (не менее 6 символов)","Құпиясөзді ауыстыру":"Сменить пароль","Көмек керек пе?":"Нужна помощь?","Жиі кездесетін сұрақтардың жауабы төменде. Денсаулыққа қатысты шұғыл жағдайда қосымшаға емес, 112 нөміріне қоңырау шалыңыз.":"Ответы на частые вопросы ниже. В экстренной ситуации со здоровьем звоните на 112, а не пишите в приложение.","Ескерту келмей жатыр.":"Напоминание не приходит."," Демо нұсқада ескерту қосымша ашық тұрғанда ғана көрсетіледі. Телефонға нақты push-хабарлама келесі нұсқада жасалады.":" В демо-версии напоминание показывается только при открытом приложении. Настоящие push-уведомления на телефон будут в следующей версии.","Фотодан дәрі танылмады.":"Лекарство по фото не распознано."," Фотоны жарық жерде, мәтін анық көрінетіндей түсіріңіз немесе дәріні қолмен қосыңыз.":" Сфотографируйте при хорошем освещении, чтобы текст был чётко виден, или добавьте лекарство вручную.","Деректерім қайда?":"Где мои данные?"," Тек осы құрылғыдағы браузерде. Браузер деректерін тазаласаңыз, олар өшеді.":" Только в браузере на этом устройстве. Если очистить данные браузера, они удалятся.","Құпиясөзді ұмыттым.":"Я забыл(а) пароль."," Демо нұсқада қалпына келтіру жоқ: қайта тіркелу керек.":" В демо-версии восстановления нет: нужно зарегистрироваться заново.","Деректі өшіргім келеді.":"Хочу удалить данные."," «Келісімдер» бөлімінде келісімді қайтарып алсаңыз, барлық дерек өшеді.":" Если отозвать согласие в разделе «Согласия», все данные будут удалены.","Қосымша":"Приложение","Жазылым":"Подписка","Баптаулар":"Настройки","Техникалық қолдау":"Техподдержка","Жауапты AI және дерек":"Ответственный ИИ и данные","Келісімдер":"Согласия","Пайдаланушы келісімі":"Пользовательское соглашение","Құпиялылық саясаты":"Политика конфиденциальности","\">← Артқа":"\">← Назад","Д":"Д","Premium қосулы":"Premium включён","Тегін жоспар · Premium ":"Бесплатный план · Premium ","Құжаттар, келісімді қайтару":"Документы, отзыв согласия","Қосулы":"Включён","Өшірулі":"Выключен","Дәрігерге хабар дайындау":"Подготовка сообщения врачу","Қабылдауға дайындық":"Подготовка к приёму","Дәрігерге ИИ-конспект":"ИИ-конспект для врача","Premium · ИИ-конспект":"Premium · ИИ-конспект","Дәрі қоры":"Запас лекарств","Қашан таусылады":"Когда закончится","Premium · таусылу болжамы":"Premium · прогноз окончания","Профиль, қамқор туыс":"Профиль, родственник-опекун","Сұрақ пен байланыс":"Вопросы и связь","Шығу":"Выйти","Деректер құрылғыда қалады":"Данные остаются на устройстве","AI диагноз қоймайды және ем тағайындамайды, тек құжатта жазылғанды кестеге айналдырады.":"ИИ не ставит диагноз и не назначает лечение, он только превращает написанное в документе в расписание.","Дәрі атауы мен дозасын әрқашан өзіңіз тексеріп растайсыз.":"Название и дозу лекарства вы всегда проверяете и подтверждаете сами.","Фото тануға ғана ИИ қызметіне жіберіледі, DenSau оны сақтамайды.":"На распознавание фото отправляется только ИИ-сервису, DenSau его не хранит.","Кесте мен журнал деректері тек сіздің құрылғыңыздағы браузерде сақталады.":"Данные расписания и журнала хранятся только в браузере на вашем устройстве.","Қысым мен қант мәндерін DenSau бағаламайды, шешімді дәрігер қабылдайды.":"DenSau не оценивает значения давления и сахара, решение принимает врач.","График үшін кемінде 2 өлшем жазыңыз.":"Для графика запишите не менее 2 измерений.","Жоғарғы (систолалық)":"Верхнее (систолическое)","Төменгі (диастолалық)":"Нижнее (диастолическое)","Қант, ммоль/л":"Сахар, ммоль/л","Қан қысымы":"Артериальное давление","Қант деңгейі":"Уровень сахара"," графигі, соңғы ":" — график, последние "," өлшем\">":" измерений\">","Соңғысы":"Последнее","Орташа":"Среднее","Өлшем саны":"Кол-во измерений","Денсаулық журналы":"Журнал здоровья","Өлшемдерді жазыңыз, график дәрігерге көрсетуге ыңғайлы.":"Записывайте измерения, график удобно показать врачу.","\">Қан қысымы":"\">Давление","\">Қант":"\">Сахар","Жоғарғы":"Верхнее","Төменгі":"Нижнее","Пульс":"Пульс","Қашан":"Когда","Тамақтан кейін":"После еды","Басқа уақытта":"В другое время"," Жазу":" Записать","Соңғы жазбалар":"Последние записи"," · пульс ":" · пульс "," ммоль/л":" ммоль/л","\" aria-label=\"Жазбаны өшіру\">":"\" aria-label=\"Удалить запись\">","DenSau мәндерді бағаламайды және диагноз қоймайды. Қысым мен қант туралы шешімді дәрігер қабылдайды.":"DenSau не оценивает значения и не ставит диагноз. Решение о давлении и сахаре принимает врач.","DenSau командасы (студенттік жоба)":"Команда DenSau (студенческий проект)","Демо нұсқа (құжат нұсқасы 0.1). Мәтін нақты қолданысқа шығар алдында заңгер тексеруінен өтеді.":"Демо-версия (версия документа 0.1). Перед реальным использованием текст пройдёт проверку юристом.","1. Қосымша туралы":"1. О приложении","DenSau — дәрі қабылдау кестесін құруға және еске салуға көмектесетін оқу және пилоттық қосымша. Ол медициналық қызмет емес: диагноз қоймайды, ем тағайындамайды және дәрігер кеңесін алмастырмайды.":"DenSau — учебное и пилотное приложение, помогающее составить расписание приёма лекарств и напоминать о нём. Это не медицинская услуга: оно не ставит диагноз, не назначает лечение и не заменяет консультацию врача.","2. Жасанды интеллект":"2. Искусственный интеллект","ИИ рецепт, дәрі қорабы немесе выписка фотосынан дәрі атауын, дозасын және уақытын оқиды. ИИ қателесуі мүмкін. Сіз әрқашан нәтижені құжатпен салыстырып, түзетіп, растайсыз. Растамайынша, ештеңе кестеге қосылмайды.":"ИИ считывает с фото рецепта, упаковки или выписки название, дозу и время приёма лекарства. ИИ может ошибаться. Вы всегда сверяете результат с документом, исправляете и подтверждаете. Пока вы не подтвердите, ничего в расписание не добавляется.","3. Еске салу":"3. Напоминания","Еске салу қосымша ашық тұрғанда ғана көрсетіледі, оның уақытында келетініне кепілдік жоқ. Дәрі қабылдауға жауапкершілік өзіңізде.":"Напоминания показываются только при открытом приложении, гарантии, что они придут вовремя, нет. Ответственность за приём лекарств лежит на вас.","4. Шұғыл жағдай":"4. Экстренный случай","Жағдайыңыз нашарласа немесе шұғыл белгілер болса (кеуде ауруы, тыныс алу қиындығы, есінен тану), 112-ге қоңырау шалыңыз. Қосымша бұл үшін жасалмаған.":"Если состояние ухудшилось или появились тревожные признаки (боль в груди, затруднённое дыхание, обморок), звоните на 112. Приложение для этого не предназначено.","5. Дәрі туралы сұрақ":"5. Вопрос о лекарстве","Қосымша сұрағыңызды дәрігерге немесе фармацевке жіберуге арналған хабарға айналдырады. Дәрі ауыстыру немесе доза туралы шешімді тек дәрігер қабылдайды.":"Приложение превращает ваш вопрос в сообщение, которое можно отправить врачу или фармацевту. Решение о замене лекарства или о дозе принимает только врач.","6. Жас":"6. Возраст","Қосымшаны 18 жастан асқан адам немесе заңды өкілінің келісімімен қолдана алады.":"Приложением может пользоваться человек старше 18 лет или с согласия законного представителя.","7. Жауапкершілік":"7. Ответственность","Қосымша «қалай бар солай» ұсынылады және медициналық шешім қабылдауға негіз бола алмайды.":"Приложение предоставляется «как есть» и не может служить основанием для принятия медицинских решений.","Құпиялылық саясаты және деректерді өңдеуге келісім":"Политика конфиденциальности и согласие на обработку данных","1. Оператор":"1. Оператор","2. Субъект және деректер тізімі":"2. Субъект и перечень данных","Субъект — сіз (қосымша пайдаланушысы). Өңделетін деректер: атыңыз (міндетті емес); қамқор туысыңыздың аты, туыстық дәрежесі және телефоны (оның келісімімен); дәрі тізімі (атауы, дозасы, уақыты); қабылдау белгілері; қан қысымы мен қант өлшемдері; ораза режимінің уақыттары; келісім күні. Дәрі туралы хабарды ИИ-мен құрастырғанда осы деректердің қажетті бөлігі ИИ қызметіне жіберіледі (тек бөлек келісім берсеңіз).":"Субъект — вы (пользователь приложения). Обрабатываемые данные: ваше имя (необязательно); имя, степень родства и телефон родственника-опекуна (с его согласия); список лекарств (название, доза, время); отметки о приёме; измерения давления и сахара; время режима Ораза; дата согласия. При составлении сообщения о лекарстве с помощью ИИ нужная часть этих данных отправляется ИИ-сервису (только если вы дали отдельное согласие).","3. Мақсаты":"3. Цель","Тек сіздің дәрі кестеңізді жүргізу, еске салу, журнал графигін көрсету және дәрігерге хабар дайындау. Жарнамаға және басқа мақсатқа қолданылмайды.":"Только ведение вашего расписания лекарств, напоминания, показ графика журнала и подготовка сообщения врачу. Для рекламы и иных целей не используются.","4. Қайда сақталады":"4. Где хранится","Бұл нұсқада деректер тек сіздің құрылғыңыздағы браузерде сақталады. Тек фотодан тану қолданылғанда сурет ИИ қызметіне жіберіледі (сайт нұсқасында ол DenSau-дың шағын сервер функциясы арқылы өтеді, бірақ сақталмайды). Браузер деректерін тазаласаңыз, олар жоғалады.":"В этой версии данные хранятся только в браузере на вашем устройстве. Только при распознавании по фото изображение отправляется ИИ-сервису (в веб-версии оно проходит через небольшую серверную функцию DenSau, но не сохраняется). Если очистить данные браузера, они пропадут.","5. Фото және ИИ":"5. Фото и ИИ","Фото тану үшін сіз таңдаған сурет ИИ қызметіне (Google Gemini) жіберіледі. Ол Қазақстаннан тыс жерде өңделуі мүмкін (шетелге беру). Бұл тек сіз бөлек келісім бергенде орындалады. DenSau фотоны өзі сақтамайды, ал ИИ қызметінің өз ережелері қолданылады.":"Для распознавания выбранное вами изображение отправляется ИИ-сервису (Google Gemini). Оно может обрабатываться за пределами Казахстана (трансграничная передача). Это происходит только при вашем отдельном согласии. DenSau само фото не хранит, а применяются собственные правила ИИ-сервиса.","6. Үшінші тұлғаларға беру":"6. Передача третьим лицам","Басқа адамға (мысалы, туысқа) деректер тек сіздің рұқсатыңызбен көрсетіледі. Бұл нұсқада туыс көрінісі демо және бір құрылғыда ғана жұмыс істейді.":"Другому человеку (например, родственнику) данные показываются только с вашего разрешения. В этой версии вид для родственника является демо и работает только на одном устройстве.","7. Мерзімі":"7. Срок","Деректер келісімді қайтарып алғанша немесе өшіргенше құрылғыңызда сақталады.":"Данные хранятся на вашем устройстве, пока вы не отзовёте согласие или не удалите их.","8. Құқықтарыңыз":"8. Ваши права","Мәзірдегі «Келісімдер» бөлімінде келісімді қайтарып алуға және барлық деректі өшіруге болады. Деректі түзету үшін «Баптаулар» бөлімін қолданыңыз, басқа сұраққа «Техникалық қолдау» бөлімі арқылы жазыңыз.":"В разделе «Согласия» меню можно отозвать согласие и удалить все данные. Для исправления данных используйте раздел «Настройки», по другим вопросам пишите через «Техподдержку».","9. Құқықтық негіз":"9. Правовое основание","Осы келісім Қазақстан Республикасының 2013 жылғы 21 мамырдағы № 94-V «Дербес деректер және оларды қорғау туралы» Заңына (https://adilet.zan.kz/rus/docs/Z1300000094) сәйкес беріледі. Заңның 8-бабы бойынша келісімде оператор, субъект, өңдеу мерзімі, үшінші тұлғаға және шетелге беру, деректер тізімі көрсетілуі тиіс: олар осы құжаттың 1–7 тармақтарында келтірілген.":"Настоящее согласие даётся в соответствии с Законом Республики Казахстан от 21 мая 2013 года № 94-V «О персональных данных и их защите» (https://adilet.zan.kz/rus/docs/Z1300000094). По статье 8 Закона в согласии должны быть указаны оператор, субъект, срок обработки, передача третьим лицам и за границу, перечень данных: они приведены в пунктах 1–7 этого документа.","10. Келісімді қайтарып алу":"10. Отзыв согласия","Келісімді қосымшаның «Келісімдер» бөлімінен қайтарып алуға болады. Заң бойынша өңдеу 15 жұмыс күні ішінде тоқтатылады, ал осы құрылғыдағы дерек қайтарып алған сәтте өшіріледі.":"Согласие можно отозвать в разделе «Согласия» приложения. По закону обработка прекращается в течение 15 рабочих дней, а данные на этом устройстве удаляются в момент отзыва.","11. Серверлік нұсқа":"11. Серверная версия","Болашақта деректер серверге көшірілсе, олар Қазақстан аумағындағы базада сақталады және сізден қайта келісім сұралады.":"Если в будущем данные будут перенесены на сервер, они будут храниться в базе на территории Казахстана, и у вас будет запрошено повторное согласие.","Фотоны ИИ-мен танытуға келісім":"Согласие на распознавание фото с помощью ИИ","1. Не жіберіледі":"1. Что отправляется","Дәрі қосқанда сіз таңдаған фото (рецепт, дәрі қорабы, выписка немесе скриншот). «Дәрі туралы сұрақ» бөлімінде хабар жасау үшін сіз таңдаған дәрінің атауы, дозасы және қабылдау белгілері.":"Фото, выбранное вами при добавлении лекарства (рецепт, упаковка, выписка или скриншот). В разделе «Вопрос о лекарстве» для составления сообщения отправляются название и доза выбранного вами лекарства и отметки о приёме.","2. Кімге жіберіледі":"2. Кому отправляется","ИИ қызметіне: Google Gemini. Ол деректі Қазақстаннан тыс жерде өңдеуі мүмкін (шетелге беру).":"ИИ-сервису: Google Gemini. Он может обрабатывать данные за пределами Казахстана (трансграничная передача).","Тек фотодан дәрі мәліметін оқу және дәрігерге жіберілетін хабарды құрастыру. DenSau фотоны өзі сақтамайды, ал ИИ қызметінің өз ережелері қолданылады.":"Только чтение сведений о лекарстве с фото и подготовка сообщения, отправляемого врачу. DenSau само фото не хранит, а применяются собственные правила ИИ-сервиса.","4. Міндетті емес":"4. Необязательно","Келіспесеңіз де қосымшаны қолдана аласыз: дәріні қолмен қосасыз. Келісімді кез келген уақытта «Келісімдер» бөлімінде қайтарып алуға болады.":"Если вы не согласны, приложением всё равно можно пользоваться: лекарство добавляется вручную. Согласие можно в любой момент отозвать в разделе «Согласия».","берілмеген":"не предоставлено","Дәріңізді уақытында ішуге көмектесетін көмекші":"Помощник, который поможет вовремя принимать лекарства"," block\" data-act=\"ob-reg\">Тіркелу":" block\" data-act=\"ob-reg\">Регистрация"," block\" data-act=\"ob-login-page\">Кіру":" block\" data-act=\"ob-login-page\">Войти","Жаңа тіркелу осы құрылғыдағы ескі профильді және деректі өшіреді. ":"Новая регистрация удалит старый профиль и данные на этом устройстве. ","Демо нұсқада профиль тек осы құрылғыда сақталады.":"В демо-версии профиль хранится только на этом устройстве.","Астана":"Астана","Алматы":"Алматы","Шымкент":"Шымкент","Қарағанды":"Караганда","Ақтөбе":"Актобе","Тараз":"Тараз","Павлодар":"Павлодар","Өскемен":"Усть-Каменогорск","Семей":"Семей","Атырау":"Атырау","Қостанай":"Костанай","Қызылорда":"Кызылорда","Орал":"Уральск","Петропавл":"Петропавловск","Ақтау":"Актау","Түркістан":"Туркестан","Көкшетау":"Кокшетау","Талдықорған":"Талдыкорган","Қапшағай":"Капшагай","Басқа":"Другое","Атыңызды жазыңыз.":"Введите имя.","Телефон нөмірін толық жазыңыз (10 сан, мысалы 701 234 56 78).":"Введите телефон полностью (10 цифр, например 701 234 56 78).","Email дұрыс емес. Жоқ болса, бос қалдырыңыз.":"Email неверный. Если его нет, оставьте пустым.","Құпиясөз кемінде 6 таңба болуы керек.":"Пароль должен быть не менее 6 символов.","Құпиясөздер сәйкес емес.":"Пароли не совпадают.","Туған күнді таңдаңыз.":"Выберите дату рождения.","Қаланы таңдаңыз немесе жазыңыз.":"Выберите или введите город.","Жынысты таңдаңыз.":"Выберите пол.","18 жасқа толмасаңыз, заңды өкілдің келісімін растаңыз.":"Если вам нет 18 лет, подтвердите согласие законного представителя.","Туыстың атын жазыңыз.":"Введите имя родственника.","Кім болып келетінін таңдаңыз.":"Выберите, кем он вам приходится.","Туыстың телефонын толық жазыңыз.":"Введите телефон родственника полностью.","Телефон немесе email және құпиясөзді жазыңыз.":"Введите телефон или email и пароль.","Қаңтар":"Январь","Ақпан":"Февраль","Наурыз":"Март","Сәуір":"Апрель","Мамыр":"Май","Маусым":"Июнь","Шілде":"Июль","Тамыз":"Август","Қыркүйек":"Сентябрь","Қазан":"Октябрь","Қараша":"Ноябрь","Желтоқсан":"Декабрь","Күні":"День","Айы":"Месяц","Жылы":"Год","Туған күні":"Дата рождения","D\" data-bd=\"d\" aria-label=\"Күні\">":"D\" data-bd=\"d\" aria-label=\"День\">","M\" data-bd=\"m\" aria-label=\"Айы\">":"M\" data-bd=\"m\" aria-label=\"Месяц\">","Y\" data-bd=\"y\" aria-label=\"Жылы\">":"Y\" data-bd=\"y\" aria-label=\"Год\">","Ана":"Мать","Әке":"Отец","Жұбай":"Супруг(а)","Бала":"Ребёнок","Аға / іні":"Брат","Әпке / сіңлі":"Сестра","Әже / ата":"Бабушка / дедушка","Басқа туыс":"Другой родственник","Тіркелу":"Регистрация","Кейін осы телефонмен (немесе email-мен) және құпиясөзбен кіресіз.":"Позже вы будете входить с этим телефоном (или email) и паролем.","Мысалы, Айгерім":"Например, Айгерім","Телефон нөмірі":"Номер телефона","Email (міндетті емес)":"Email (необязательно)","Құпиясөз ойлап табыңыз":"Придумайте пароль","Кемінде 6 таңба":"Не менее 6 символов","Құпиясөзді қайталаңыз":"Повторите пароль",">Келесі":">Далее","Артқа":"Назад","Өзіңіз туралы":"О вас","Бұл деректер тек сіздің профиліңізде қалады.":"Эти данные остаются только в вашем профиле.","Мысалы, Астана":"Например, Астана","Мен 18 жасқа толмадым, заңды өкілімнің келісімі бар":"Мне нет 18 лет, есть согласие законного представителя","Қамқор туысыңыз":"Ваш родственник-опекун","Сізді қадағалап, дәрі ішкеніңізді көріп отыратын отбасы мүшесі. Қазір қоспасаңыз, кейін Баптаулардан қосасыз.":"Член семьи, который будет следить и видеть, принимаете ли вы лекарства. Если не добавите сейчас, добавите позже в Настройках.","Туыстың аты":"Имя родственника","Мысалы, Мадина":"Например, Мадина","Туыстың телефоны":"Телефон родственника","Туыстың байланыс деректерін оның келісімімен енгізіңіз. Демо нұсқада оған хабарлама жіберілмейді, дерек тек осы құрылғыда сақталады.":"Вводите контактные данные родственника с его согласия. В демо-версии ему сообщение не отправляется, данные хранятся только на этом устройстве.",">Қосу және жалғастыру":">Добавить и продолжить","Қазір емес, өткізіп жіберу":"Не сейчас, пропустить","Кіру":"Вход","Тіркелгенде жазған телефонды немесе email-ді енгізіңіз.":"Введите телефон или email, указанные при регистрации.","Телефон немесе email":"Телефон или email","Құпиясөз":"Пароль",">Кіру":">Войти","Құпиясөзді ұмыттыңыз ба? Демо нұсқада серверсіз қалпына келтіру жоқ: тек қайта тіркелуге болады, ол кезде ескі деректер өшеді.":"Забыли пароль? В демо-версии без сервера восстановления нет: можно только зарегистрироваться заново, при этом старые данные удалятся.","Қайта тіркелу":"Зарегистрироваться заново","Оқылды. Енді келісе аласыз.":"Прочитано. Теперь можно соглашаться.","Келісу үшін мәтінді соңына дейін оқыңыз.":"Чтобы согласиться, прочитайте текст до конца.","Қазір емес":"Не сейчас","Келіспеймін":"Не согласен",">Келісемін":">Согласен","Келісу үшін мәтінді соңына дейін оқыңыз (":"Чтобы согласиться, прочитайте текст до конца (","Келісімсіз қолдануға болмайды":"Без согласия пользоваться нельзя","DenSau дәрі мен денсаулыққа қатысты деректермен жұмыс істейді. Пайдаланушы келісімі мен деректерді өңдеуге келісім болмаса, қосымшаны ашпаймыз және ешқандай дерек сақтамаймыз.":"DenSau работает с данными о лекарствах и здоровье. Без пользовательского соглашения и согласия на обработку данных мы не откроем приложение и не будем ничего хранить.","Келісімдерді қайта қарау":"Пересмотреть согласия","Қош келдіңіз, ":"Добро пожаловать, ","Бұл құрылғыда құпиясөзі бар профиль жоқ. Алдымен тіркеліңіз.":"На этом устройстве нет профиля с паролем. Сначала зарегистрируйтесь.","Телефон/email немесе құпиясөз қате.":"Телефон/email или пароль неверный.","Қабылданды: ":"Принято: ","Оқу":"Читать","Фотоны және дәрі деректерін ИИ-ге жіберуге келісемін (Google Gemini; шетелде өңделуі мүмкін)":"Я согласен(на) отправлять фото и данные о лекарствах ИИ (Google Gemini; может обрабатываться за рубежом)","Келісімді қайтарып алсаңыз, барлық дерек осы құрылғыдан өшеді және қосымша жабылады. Қайтару мүмкін емес.":"Если отозвать согласие, все данные будут удалены с этого устройства и приложение закроется. Отменить нельзя.","Иә, келісімді қайтарып, деректі өшіру":"Да, отозвать согласие и удалить данные","Келісімді қайтарып алу және деректі өшіру":"Отозвать согласие и удалить данные","Дәрі таусылып жатыр":"Лекарство заканчивается","Дозаны ұмытып кеттім":"Забыл(а) принять дозу","Орнына басқа дәрі ішуге бола ма деген сұрақ":"Вопрос, можно ли принять вместо него другое лекарство","Қалай ішу керек екенін нақтылау (тамақпен, уақыты)":"Уточнить, как принимать (с едой, время)","Сәлеметсіз бе! Мен ":"Здравствуйте! Я ","пациент":"пациент",". Дәрі бойынша сұрағым бар.\n\nДәрі: ":". У меня вопрос по лекарству.\n\nЛекарство: ",", қабылдау уақыты: ":", время приёма: ",".\nСұрақ тақырыбы: ":".\nТема вопроса: ","Соңғы 7 күнде ":"За последние 7 дней принято: "," рет қабылдадым.":" раз."," Соңғы қабылдау: ":" Последний приём: ","Қосымша: ":"Дополнительно: ","\nКеңес бере аласыз ба? Өз бетімше дозаны немесе дәріні өзгертпеймін.":"\nМожете ли вы посоветовать? Самостоятельно дозу или лекарство менять не буду.","Сен пациенттің атынан дәрігерге немесе фармацевке жазылатын қысқа хабарды құрастыратын көмекшісің. Тек төмендегі деректерді қолдан, ештеңе ойдан қоспа.\nҚатаң ережелер: кеңес берме, сұраққа өзің жауап берме, диагноз қойма, доза ұсынба. Тек сұрақты нақты және сыпайы етіп қой.\nТілі: қазақша, 4–7 сөйлем, 120 сөзден аспасын. Тек хабар мәтіні (тақырыпсыз, тырнақшасыз, түсініктемесіз).\nХабардың соңында «Өз бетімше дозаны немесе дәріні өзгертпеймін» деген сөйлем болсын.\n\nДеректер (JSON):\n":"Ты помощник, который составляет от имени пациента короткое сообщение врачу или фармацевту. Используй только данные ниже, ничего не выдумывай.\nСтрогие правила: не давай советов, сам на вопрос не отвечай, не ставь диагноз, не предлагай дозу. Только чётко и вежливо сформулируй вопрос.\nЯзык: русский, 4–7 предложений, не более 120 слов. Только текст сообщения (без заголовка, без кавычек, без пояснений).\nВ конце сообщения должно быть предложение «Самостоятельно дозу или лекарство менять не буду».\n\nДанные (JSON):\n","AI сұрағыңызды дәрігерге немесе фармацевке жіберуге дайын хабарға айналдырады. AI өзі жауап бермейді.":"ИИ превратит ваш вопрос в сообщение, готовое к отправке врачу или фармацевту. ИИ сам не отвечает.","Шұғыл жағдайда (кеуде ауруы, тыныс алу қиындығы, есінен тану) 112-ге қоңырау шалыңыз.":"В экстренной ситуации (боль в груди, затруднённое дыхание, обморок) звоните на 112.","Алдымен дәрі қосыңыз":"Сначала добавьте лекарство","Сұрақ нақты дәріге байланысты жазылады.":"Вопрос составляется по конкретному лекарству.","Қай дәрі туралы":"О каком лекарстве","Сұрақ тақырыбы":"Тема вопроса","Қосымша мәлімет (міндетті емес)":"Дополнительные сведения (необязательно)","\" placeholder=\"Мысалы, дәріхана бүгін жабық\" autocomplete=\"off\">":"\" placeholder=\"Например, аптека сегодня закрыта\" autocomplete=\"off\">",">Хабарды дайындау":">Подготовить сообщение","AI хабарды жазып жатыр":"ИИ пишет сообщение","Тоқтату":"Остановить","Дайын хабар (түзетуге болады)":"Готовое сообщение (можно править)","Көшіру":"Копировать","Хабарды дәрігеріңізге немесе фармацевке өзіңіз жібересіз, DenSau оны жібермейді. Жауапты тек олар береді.":"Сообщение врачу или фармацевту вы отправляете сами, DenSau его не отправляет. Отвечают только они.","AI қазір қолжетімсіз, дайын үлгі көрсетілді.":"ИИ сейчас недоступен, показан готовый шаблон.","ИИ-мен жазу Premium жоспарында. Қазір дайын үлгі көрсетілді, оны өзіңіз түзете аласыз.":"Написание с помощью ИИ доступно в плане Premium. Сейчас показан готовый шаблон, вы можете править его сами.","ИИ-ге жіберуге келісім берілмегендіктен, дайын үлгі көрсетілді. Келісімді мәзірдегі «Келісімдер» бөлімінде қосуға болады.":"Согласие на отправку ИИ не дано, поэтому показан готовый шаблон. Согласие можно включить в разделе «Согласия» меню.","Қорапта қанша таблетка бар екенін жазыңыз, DenSau қай күні таусылатынын есептеп, алдын ала еске салады.":"Укажите, сколько таблеток в упаковке, DenSau рассчитает, в какой день они закончатся, и заранее напомнит.","Таусылу болжамы Premium жоспарында.":"Прогноз окончания доступен в плане Premium.","\">Қалды шамамен ":"\">Осталось примерно "," дана, ":" шт., хватит на "," күнге жетеді (таусылу күні: ":" дн. (закончится: ","Қор жазылмаған.":"Запас не записан.","\">Қорапта (дана)":"\">В упаковке (шт.)","\">1 дозада (дана)":"\">В одной дозе (шт.)","Есептеу сіз белгілеген «Іштім» белгілеріне негізделген және шамалы. DenSau дәріні қашан алу керегін ұсынбайды, тек таусылатын күнді көрсетеді.":"Расчёт основан на ваших отметках «Принял(а)» и приблизителен. DenSau не советует, когда покупать лекарство, а только показывает дату окончания.","Қабылдауға дайындық. ":"Подготовка к приёму. ",".\n\nДәрілер (соңғы 30 күн):\n":".\n\nЛекарства (последние 30 дней):\n","- Қабылдау деректері жоқ.\n":"- Данных о приёме нет.\n"," рет ішілді (":" раз принято (","%), өткізілген ":"%), пропущено ","\nӨлшемдер (соңғы 30 күн):\n":"\nИзмерения (последние 30 дней):\n","- Қан қысымы: ":"- Давление: "," өлшем, соңғысы ":" измерений, последнее ","); жоғарғысы ":"); верхнее ",", төменгісі ":", нижнее ","- Қант: ":"- Сахар: "," ммоль/л (":" ммоль/л (","\nДәрігерге сұрақтарым:\n":"\nВопросы врачу:\n","Сен пациентке дәрігер қабылдауына дайындалуға көмектесесің. Төмендегі деректерден қысқа, реттелген қазақша конспект жаса.\nҚатаң ережелер: тек берілген деректі қолдан, ештеңе ойдан қоспа. Диагноз қойма, кеңес берме, мәндерді «жоғары», «қалыпты», «жақсы», «жаман» деп бағаламa, тек сандар мен фактіні жаз.\nҚұрылымы: 1) Дәрілер мен қабылдау, 2) Өлшемдер (болса), 3) Дәрігерге сұрақтар (пациент жазғанды анық, қысқа етіп қайта жаз; жоқ болса бос қалдыр).\nКөлемі 180 сөзден аспасын. Тек мәтін, тақырыбы мен түсініктемесіз.\n\nДеректер (JSON):\n":"Ты помогаешь пациенту подготовиться к приёму у врача. Из данных ниже составь краткий, упорядоченный конспект на русском языке.\nСтрогие правила: используй только предоставленные данные, ничего не выдумывай. Не ставь диагноз, не давай советов, не оценивай значения словами «высокое», «нормальное», «хорошее», «плохое», пиши только цифры и факты.\nСтруктура: 1) Лекарства и приём, 2) Измерения (если есть), 3) Вопросы врачу (перепиши то, что написал пациент, ясно и кратко; если нет, оставь пустым).\nОбъём не более 180 слов. Только текст, без заголовка и пояснений.\n\nДанные (JSON):\n","Соңғы 30 күндегі қабылдау мен өлшемдерден дәрігерге көрсететін қысқа конспект жасайды.":"Составляет краткий конспект по приёму и измерениям за последние 30 дней, который можно показать врачу.","ИИ-конспект Premium жоспарында.":"ИИ-конспект доступен в плане Premium.","Дәрігерге сұрақтарыңыз (әр жолға біреуден, міндетті емес)":"Ваши вопросы врачу (по одному в строке, необязательно)",">Конспект жасау":">Составить конспект","AI конспект жазып жатыр":"ИИ пишет конспект","Дайын конспект (түзетуге болады)":"Готовый конспект (можно править)","Конспект тек сіздің «Іштім» және өлшем жазбаларыңызға негізделген. Ол диагноз емес, дәрігер шешім қабылдайды.":"Конспект основан только на ваших отметках «Принял(а)» и записях измерений. Это не диагноз, решение принимает врач.","ИИ-ге жіберуге келісім берілмегендіктен, конспект құрылғыда дайын үлгімен жасалды. Келісімді «Келісімдер» бөлімінде қосуға болады.":"Согласие на отправку ИИ не дано, поэтому конспект составлен на устройстве по готовому шаблону. Согласие можно включить в разделе «Согласия»."," уақытын өшіру\">":" — удалить время\">","\" aria-label=\"Қабылдау уақытын қосу\"><button class=\"btn ghost sm\" data-act=\"add-time\" data-i=\"":"\" aria-label=\"Добавить время приёма\"><button class=\"btn ghost sm\" data-act=\"add-time\" data-i=\""," Қосу":" Добавить","Қолмен енгізілді":"Введено вручную","AI анық оқыды · ":"ИИ уверенно прочитал · ","Тексеріңіз · AI бағасы ":"Проверьте · оценка ИИ ","> Қосу":"> Добавить","\">Дәрі атауы":"\">Название лекарства","\">Доза":"\">Доза","Қабылдау уақыты":"Время приёма","\">Ескертпе":"\">Примечание","\" placeholder=\"мысалы, тамақтан кейін\" autocomplete=\"off\">":"\" placeholder=\"например, после еды\" autocomplete=\"off\">","Жаңа дәрі қосу":"Добавить новое лекарство","Рецепт, дәрі қорабы немесе аурухананың выпискасын түсіріңіз, AI дәрілерді өзі таниды.":"Сфотографируйте рецепт, упаковку или выписку из больницы, ИИ сам распознает лекарства.","\" alt=\"Таңдалған фото\">":"\" alt=\"Выбранное фото\">","AI құжатты оқып жатыр":"ИИ читает документ","Бұл 10–30 секунд алуы мүмкін.":"Это может занять 10–30 секунд.","AI қателесуі мүмкін. Атауы мен дозасын фотомен салыстырып, қажет болса түзетіңіз.":"ИИ может ошибаться. Сравните название и дозу с фото и при необходимости исправьте."," Тағы дәрі қосу":" Добавить ещё лекарство","Дәрі атауы мен дозасын рецептпен салыстырдым және растаймын":"Я сверил(а) название и дозу лекарства с рецептом и подтверждаю"," Кестеге қосу":" Добавить в расписание","Тегін фото тану біткен":"Бесплатные распознавания закончились","Тегін жоспарда ":"В бесплатном плане "," фото. Одан кейін дәріні қолмен қосуға болады немесе Premium қосыңыз.":" фото. После этого лекарство можно добавлять вручную или подключить Premium.","Фотодан тану үшін суретті ИИ қызметіне (Google Gemini, шетелде өңделуі мүмкін; тегін нұсқада Google суретті өз қызметін жақсартуға қолдануы мүмкін, сондықтан демода жеке рецептіңізді емес, дәрі қорабын немесе үлгіні түсіріңіз) жіберуге келісім керек. Келісім бермесеңіз, дәріні қолмен қосасыз.":"Для распознавания по фото нужно согласие на отправку изображения ИИ-сервису (Google Gemini, может обрабатываться за рубежом; в бесплатной версии Google может использовать изображение для улучшения своих сервисов, поэтому в демо снимайте не личный рецепт, а упаковку лекарства или образец). Без согласия лекарство добавляется вручную.","Келісім беру":"Дать согласие","\" aria-label=\"Фото таңдау\">":"\" aria-label=\"Выбрать фото\">","Фото түсіру":"Сфотографировать","Рецепт, қорап, выписка немесе скриншот. Галереядан да болады":"Рецепт, упаковка, выписка или скриншот. Можно и из галереи","Фотодан тану бұл көріністе қолжетімсіз. Дәріні қолмен қосуға болады.":"Распознавание по фото в этом режиме недоступно. Лекарство можно добавить вручную.","НЕМЕСЕ ҚОЛМЕН":"ИЛИ ВРУЧНУЮ","Дәріні қолмен қосу":"Добавить лекарство вручную","Фото тек оқу үшін жіберіледі. DenSau дозаны өзгертпейді және кеңес бермейді, тек рецептте жазылғанды кестеге айналдырады.":"Фото отправляется только для чтения. DenSau не меняет дозу и не даёт советов, а только превращает написанное в рецепте в расписание.","Сен дәрі рецептінің, дәрі қорабының, аурухананың выпискасының (шығару құжаты) немесе электронды рецепт скриншотының фотосын мәтінге айналдыратын көмекшісің. Тек фотода көрінетінді жаз, ештеңе ойдан қоспа. Диагноз қойма, ем тағайындама, дозаны өзгертпе.\n\n":"Ты помощник, который превращает в текст фото лекарственного рецепта, упаковки лекарства, выписки из больницы (документ о выписке) или скриншота электронного рецепта. Пиши только то, что видно на фото, ничего не выдумывай. Не ставь диагноз, не назначай лечение, не меняй дозу.\n\n","Тек бір JSON объект қайтар:\n{\"readable\":true,\"medicines\":[{\"name\":\"дәрі атауы\",\"dose\":\"500 мг\",\"frequency\":\"фотода жазылған жиілік немесе бос жол\",\"times\":[\"08:00\"],\"note\":\"қысқа ескертпе қазақша немесе бос жол\",\"confidence\":0.9}],\"message\":\"оқылмаса, себебін қазақша бір сөйлеммен жаз, әйтпесе бос жол\"}\n\n":"Верни только один JSON-объект:\n{\"readable\":true,\"medicines\":[{\"name\":\"название лекарства\",\"dose\":\"500 мг\",\"frequency\":\"частота, написанная на фото, или пустая строка\",\"times\":[\"08:00\"],\"note\":\"краткое примечание по-русски или пустая строка\",\"confidence\":0.9}],\"message\":\"если не читается, одним предложением по-русски напиши причину, иначе пустая строка\"}\n\n","Ережелер:\n- times: фотода нақты уақыт жазылса, соны ал. Әйтпесе жиілік бойынша: 1 рет күніне [\"08:00\"], 2 рет [\"08:00\",\"20:00\"], 3 рет [\"08:00\",\"14:00\",\"20:00\"]. Жиілік көрінбесе [\"08:00\"].\n- confidence: атауы мен дозасы қаншалықты анық оқылғанын 0-ден 1-ге дейін бағала. Бұлыңғыр немесе болжам болса 0.6-дан төмен қой.\n- Дозасы көрінбесе dose бос жол болсын.\n- Бір фотода бірнеше дәрі болса, бәрін medicines тізіміне қос. Ауру атауын, диагнозды және басқа ақпаратты жазба.\n- Фотода дәрі табылмаса немесе мәтін оқылмаса: {\"readable\":false,\"medicines\":[],\"message\":\"себебі\"}.":"Правила:\n- times: если на фото указано точное время, возьми его. Иначе по частоте: 1 раз в день [\"08:00\"], 2 раза [\"08:00\",\"20:00\"], 3 раза [\"08:00\",\"14:00\",\"20:00\"]. Если частота не видна, [\"08:00\"].\n- confidence: оцени от 0 до 1, насколько чётко прочитаны название и доза. Если размыто или это догадка, ставь ниже 0.6.\n- Если доза не видна, dose пустая строка.\n- Если на одном фото несколько лекарств, добавь все в список medicines. Название болезни, диагноз и другую информацию не пиши.\n- Если лекарств на фото нет или текст не читается: {\"readable\":false,\"medicines\":[],\"message\":\"причина\"}.","ИИ-ге рұқсат берілмеді. Дәріні қолмен қосыңыз.":"Доступ ИИ не разрешён. Добавьте лекарство вручную.","Бұл аккаунтта AI қолжетімсіз. Дәріні қолмен қосыңыз.":"В этом аккаунте ИИ недоступен. Добавьте лекарство вручную.","Сұраныс тым көп болды. Біраз күтіп, қайта көріңіз.":"Слишком много запросов. Подождите немного и попробуйте снова.","Фото оқылмады. Басқа сурет таңдаңыз.":"Фото не прочитано. Выберите другое изображение.","Фотодан тану қолжетімсіз. Дәріні қолмен қосыңыз.":"Распознавание по фото недоступно. Добавьте лекарство вручную.","AI бұл фотоны өңдей алмады. Басқа сурет таңдаңыз.":"ИИ не смог обработать это фото. Выберите другое изображение.","Сессия аяқталды. Бетті қайта ашыңыз.":"Сессия завершена. Откройте страницу заново.","AI жауабы толық болмады. Қайта көріңіз немесе дәріні қолмен қосыңыз.":"Ответ ИИ получен не полностью. Попробуйте снова или добавьте лекарство вручную.","Фотодан дәрі табылмады. Анығырақ сурет түсіріп көріңіз немесе қолмен қосыңыз.":"Лекарства на фото не найдены. Сфотографируйте чётче или добавьте вручную.","Басты":"Главная","Журнал":"Журнал","Туыс":"Родные","Іштім деп белгіленді":"Отмечено как принятое","DENSAU · ҚАЗІР":"DENSAU · СЕЙЧАС","Дәріңізді ішу уақыты келді!":"Пора принять лекарство!","\">Кейінірек":"\">Позже","10 минуттан кейін қайта еске саламыз":"Напомним ещё раз через 10 минут","Үлгі дерек тазаланды":"Демо-данные очищены","Қысым мәнін тексеріңіз: жоғарғы төменгіден үлкен болуы керек":"Проверьте значение давления: верхнее должно быть больше нижнего","Қант мәнін тексеріңіз (1–40 ммоль/л)":"Проверьте значение сахара (1–40 ммоль/л)","Жазылды":"Записано","Келісім берілді":"Согласие дано","Көшірілді":"Скопировано","Мәтін таңдалды, көшіріңіз":"Текст выделен, скопируйте","Қор сақталды":"Запас сохранён","Телефон дұрыс емес.":"Телефон неверный.","Email дұрыс емес.":"Email неверный.","Туған күнді толық және дұрыс таңдаңыз.":"Выберите дату рождения полностью и правильно.","Туыс кім екенін таңдаңыз.":"Выберите, кем приходится родственник.","Сақталды":"Сохранено","Жаңа құпиясөз кемінде 6 таңба болуы керек.":"Новый пароль должен быть не менее 6 символов.","Ағымдағы құпиясөз қате.":"Текущий пароль неверный.","Құпиясөз ауыстырылды":"Пароль изменён","Төлем сәтті (демо). Premium қосылды":"Оплата прошла (демо). Premium подключён","Жазылым тоқтатылды":"Подписка отменена","Ораза режимі өшірілді":"Режим Ораза выключен","Сәрі уақыты ауызашардан ерте болуы керек":"Время сухура должно быть раньше ифтара","Ораза режимі қосылды":"Режим Ораза включён","Уақытты таңдаңыз":"Выберите время"," дәрі кестеге қосылды":" шт. добавлено в расписание","ИИ-ге жіберуге келісім берілді":"Согласие на отправку ИИ дано","ИИ-ге жіберуге келісім қайтарылды":"Согласие на отправку ИИ отозвано","Атыңыз (міндетті емес)":"Ваше имя (необязательно)","Демоны бастау":"Начать демо","Бастау арқылы сіз пайдаланушы келісімі мен құпиялылық саясатымен келісесіз. Оларды мәзірдегі «Келісімдер» бөлімінен оқи аласыз. Деректер тек осы құрылғыда сақталады.":"Нажимая «Начать», вы соглашаетесь с пользовательским соглашением и политикой конфиденциальности. Их можно прочитать в разделе «Согласия» меню. Данные хранятся только на этом устройстве.","Үлгі нәтиже":"Пример результата","Тексеріңіз · үлгі":"Проверьте · пример","Бұл үлгі рецепттің алдын ала дайындалған нәтижесі, нақты ИИ оқуы емес. Нақты фотодан тану тек қолжетімді жерде істейді.":"Это заранее подготовленный результат для образца рецепта, а не реальное чтение ИИ. Распознавание по настоящему фото работает только там, где оно доступно.","Үлгі рецепт (жасанды)":"Образец рецепта (искусственный)","Нәтиже алдын ала дайындалған, нақты ИИ оқуы емес.":"Результат подготовлен заранее, это не реальное чтение ИИ.","Үлгі рецептпен көру":"Посмотреть на образце рецепта","Фотода: 2 капсуладан күніне 1 рет, 3 күн.":"На фото: по 2 капсулы 1 раз в день, 3 дня.","Курс 7 күн.":"Курс 7 дней.","Рецептте «по схеме» деп жазылған, дозасы жоқ.":"В рецепте указано «по схеме», доза не указана.","1 десерттік қасық":"1 десертная ложка","Негізгі мәзір":"Главное меню","<button class=\"menubtn\" data-act=\"menu-open\" aria-label=\"Мәзірді ашу\">":"<button class=\"menubtn\" data-act=\"menu-open\" aria-label=\"Открыть меню\">","<button class=\"menubtn\" id=\"menuClose\" data-act=\"menu-close\" aria-label=\"Жабу\">":"<button class=\"menubtn\" id=\"menuClose\" data-act=\"menu-close\" aria-label=\"Закрыть\">","<div class=\"seg\" role=\"group\" aria-label=\"Өлшем түрі\">":"<div class=\"seg\" role=\"group\" aria-label=\"Тип измерения\">","<textarea class=\"inp msgbox\" id=\"prepQ\" data-prep=\"q\" placeholder=\"Мысалы, дәрінің дозасы өзгере ме?\">":"<textarea class=\"inp msgbox\" id=\"prepQ\" data-prep=\"q\" placeholder=\"Например, меняется ли доза лекарства?\">","<div class=\"notif\" role=\"alertdialog\" aria-label=\"Еске салғыш\">":"<div class=\"notif\" role=\"alertdialog\" aria-label=\"Напоминание\">"};
+var LANG=(function(){try{var v=localStorage.getItem('densau-lang');if(v==='ru'||v==='kk')return v;}catch(e){}try{if(/^ru/i.test(navigator.language||''))return 'ru';}catch(e){}return 'kk';})();
+function tr(s){if(LANG!=='ru')return s;var p=s.split(/(<[^>]*>)/);for(var i=0;i<p.length;i++){var x=p[i];if(x&&RU[x]!=null)p[i]=RU[x];}return p.join('');}
+function setLang(l){var ok=false;try{localStorage.setItem('densau-lang',l);ok=localStorage.getItem('densau-lang')===l;}catch(e){}if(ok){location.reload();return;}LANG=l;document.documentElement.lang=l==='ru'?'ru':'kk';try{document.querySelector('nav.tabbar').setAttribute('aria-label',tr('Негізгі мәзір'));}catch(e){}render();}
+function langSw(){return '<div class="langsw" role="group" aria-label="Тіл / Язык"><button data-act="lang" data-l="kk"'+(LANG==='kk'?' aria-pressed="true"':'')+'>ҚАЗ</button><button data-act="lang" data-l="ru"'+(LANG==='ru'?' aria-pressed="true"':'')+'>РУС</button></div>';}
+try{document.documentElement.lang=LANG==='ru'?'ru':'kk';var _nb=document.querySelector('nav.tabbar');if(_nb)_nb.setAttribute('aria-label',tr('Негізгі мәзір'));}catch(e){}
+var KZ_D=[tr('Жс'),tr('Дс'),tr('Сс'),tr('Ср'),tr('Бс'),tr('Жм'),tr('Сб')];
+var KZ_M=[tr('қаңтар'),tr('ақпан'),tr('наурыз'),tr('сәуір'),tr('мамыр'),tr('маусым'),tr('шілде'),tr('тамыз'),tr('қыркүйек'),tr('қазан'),tr('қараша'),tr('желтоқсан')];
+var STORE='densau-app-v1';
+var ICON={
+  phone:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+  card:'<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h3"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',
+  star:'<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01"/>',
+  home:'<path d="M3 11l9-8 9 8M5 9.5V20h14V9.5"/>',
+  cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/>',
+  users:'<path d="M16 20v-1.5a4 4 0 00-4-4H7a4 4 0 00-4 4V20"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M21 20v-1.5a4 4 0 00-3-3.9M15 4a3.5 3.5 0 010 7"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  pill:'<path d="M10.5 20.5a5 5 0 01-7-7l9-9a5 5 0 017 7z"/><path d="M8.5 8.5l7 7"/>',
+  bell:'<path d="M6 16v-5a6 6 0 1112 0v5l2 2H4z"/><path d="M10 21h4"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/>',
+  chart:'<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+  moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>'
+};
+function ic(n,s){s=s||20;return '<svg class="ic" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICON[n]+'</svg>';}
+function $(s){return document.querySelector(s);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n){return String(n).padStart(2,'0');}
+function dkey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x;}
+function mins(t){var p=t.split(':');return (+p[0])*60+(+p[1]);}
+function uid(){return Math.random().toString(36).slice(2,9);}
+
+/* ---------- state ---------- */
+function seed(){
+  var today=new Date(), added=dkey(addDays(today,-28));
+  var meds=[
+    {id:'m1',name:tr('Метформин'),dose:tr('500 мг'),times:['08:00'],note:tr('таңертең'),added:added},
+    {id:'m2',name:tr('Аспирин'),dose:tr('100 мг'),times:['13:00'],note:tr('түскі ас кезінде'),added:added},
+    {id:'m3',name:tr('Витамин D'),dose:'',times:['20:00'],note:tr('кешке'),added:added}
+  ];
+  var log={},pat=[3,2,3,1,3,2,3],nowD=new Date();
+  for(var i=1;i<=27;i++){
+    var d=addDays(today,-i),k=dkey(d),take=pat[i%7];log[k]={};
+    meds.forEach(function(m,mi){if(mi<take)m.times.forEach(function(t){log[k][m.id+'@'+t]={at:t};});});
+  }
+  log[dkey(today)]={};
+  log[dkey(today)]['m1@08:00']={at:(nowD.getHours()*60+nowD.getMinutes()>=485?'08:05':pad(nowD.getHours())+':'+pad(nowD.getMinutes()))};
+  var sys=[132,128,135,126,130,124,127],dia=[84,82,88,80,84,79,81],glu=[6.4,5.9,6.8,5.6,6.1,5.8,6.0],vitals=[];
+  for(var j=0;j<7;j++){var vd=addDays(today,j-6);vd.setHours(8,30,0,0);var tt=vd.getTime();
+    vitals.push({id:'vb'+j,t:tt,type:'bp',a:sys[j],b:dia[j],c:null});
+    vitals.push({id:'vg'+j,t:tt+60000,type:'glu',a:glu[j],ctx:tr('Аш қарынға')});}
+  return {demo:true,demoV2:true,name:tr('Айгерім'),meds:meds,log:log,vitals:vitals,oraza:{on:false,sahur:'04:30',iftar:'18:00'},consent:null};
+}
+var S;
+function load(){try{var r=localStorage.getItem(STORE);if(r){var p=JSON.parse(r);if(p&&Array.isArray(p.meds)){p.vitals=p.vitals||[];p.consent=p.consent||null;p.oraza=p.oraza||{on:false,sahur:'04:30',iftar:'18:00'};
+    if(p.demo&&!p.demoV2){p.demoV2=true;var td=new Date();p.meds.forEach(function(m){if(m.id==='m1'||m.id==='m2'||m.id==='m3')m.added=dkey(addDays(td,-28));});
+      for(var i=1;i<=27;i++){var d=addDays(td,-i),k=dkey(d);p.log[k]=p.log[k]||{};p.meds.forEach(function(m){if(m.id.charAt(0)!=='m')return;m.times.forEach(function(t){var key=m.id+'@'+t;if(p.log[k][key])return;var h=(d.getDate()*7+m.id.charCodeAt(1)*3+i)%9;if(h!==0)p.log[k][key]={at:t};});});}}
+    return p;}}}catch(e){}return seed();}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}}
+S=load();
+
+function shiftTime(t){
+  var o=S.oraza;if(!o||!o.on)return t;
+  var m=mins(t);
+  if(m>mins(o.sahur)&&m<mins(o.iftar))return m<720?o.sahur:o.iftar;
+  return t;
+}
+function dosesFor(k){
+  var out=[];
+  S.meds.forEach(function(m){if(m.added>k)return;m.times.forEach(function(t){out.push({key:m.id+'@'+t,med:m,time:shiftTime(t),orig:t});});});
+  out.sort(function(a,b){return mins(a.time)-mins(b.time)||a.med.name.localeCompare(b.med.name);});
+  return out;
+}
+function entry(k,dose){return (S.log[k]||{})[dose.key];}
+function nowMin(){var n=new Date();return n.getHours()*60+n.getMinutes();}
+function stateOf(dose,k){
+  if(entry(k,dose))return 'taken';
+  var d=mins(dose.time)-nowMin();
+  if(d>0)return 'upcoming';
+  return -d>45?'late':'due';
+}
+function medLine(m){return esc(m.name)+(m.dose?' '+esc(m.dose):'');}
+
+/* ---------- views ---------- */
+var view='home';
+var add={phase:'idle',items:[],preview:null,msg:'',err:'',ctl:null,confirmed:false};
+var sampleFn=null,imgLimits=null,snooze={},aiProbed=false;
+
+function head(){
+  var n=new Date();
+  return '<div class="top"><div class="brand"><div class="mark">D</div><div>Den<b>Sau</b></div></div><div class="right"><div class="today-label">'+n.getDate()+' '+KZ_M[n.getMonth()]+'<br>'+KZ_D[n.getDay()]+tr('</div><button class="menubtn" data-act="menu-open" aria-label="Мәзірді ашу">')+ic('menu',22)+'</button></div></div>';
+}
+function greeting(){var h=new Date().getHours();return h<5?tr('Қайырлы түн'):h<12?tr('Қайырлы таң'):h<18?tr('Қайырлы күн'):tr('Қайырлы кеш');}
+
+var weekOff=0;
+function weekStart(off){var t=new Date();t.setHours(0,0,0,0);return addDays(t,-((t.getDay()+6)%7)+off*7);}
+function weekTitle(off){var m=weekStart(off),e=addDays(m,6);return (off===0?tr('Осы апта'):off===-1?tr('Өткен апта'):tr('Апта'))+' · '+dmy(m.getTime())+'–'+dmy(e.getTime());}
+function weekHTML(off){
+  off=off||0;
+  var mon=weekStart(off),tk=dkey(new Date()),cells='';
+  for(var i=0;i<7;i++){
+    var d=addDays(mon,i),k=dkey(d),ds=dosesFor(k),n=ds.length,t=ds.filter(function(x){return entry(k,x);}).length;
+    var isToday=k===tk,fut=k>tk,cls;
+    if(fut||n===0)cls='none';else if(t===n)cls='full';else if(isToday)cls=t===0?'wait':'part';else cls=t===0?'miss':'part';
+    cells+='<div class="day'+(isToday?' now':'')+'"><small>'+KZ_D[d.getDay()]+'</small><div class="dot '+cls+'">'+(cls==='full'?ic('check',16):d.getDate())+'</div><div class="cnt">'+(n&&!fut?t+'/'+n:'–')+'</div></div>';
+  }
+  return '<div class="wk">'+cells+tr('</div><div class="legend"><span><i style="background:var(--teal)"></i>бәрі ішілді</span><span><i style="background:var(--teal-tint);box-shadow:inset 0 0 0 2px var(--teal)"></i>бір бөлігі</span><span><i style="background:var(--coral-tint);box-shadow:inset 0 0 0 2px var(--coral)"></i>ұмытылды</span></div>');
+}
+
+function doseRow(dose,k,rel){
+  var st=stateOf(dose,k),e=entry(k,dose),m=dose.med;
+  var meta='<b>'+esc(dose.time)+'</b>'+(m.note?' · '+esc(m.note):'')+(dose.orig!==dose.time?tr(' · әдетте ')+esc(dose.orig):'');
+  if(e&&e.at)meta='<b>'+esc(dose.time)+'</b> · '+esc(e.at)+tr(' ішілді');
+  var act='';
+  if(rel){
+    act=st==='taken'?tr('<span class="tag ok">Ішілді</span>'):st==='late'?tr('<span class="tag late">Ішпеді</span>'):'<span class="tag wait">'+(st==='due'?tr('Уақыты келді'):tr('Күтілуде'))+'</span>';
+  }else if(st==='taken'){
+    act='<button class="check on" data-act="untake" data-key="'+esc(dose.key)+tr('" aria-label="Белгіні алып тастау: ')+esc(m.name)+'">'+ic('check',18)+'</button>';
+  }else if(st==='due'||st==='late'){
+    act='<button class="btn'+(st==='late'?' coral':'')+'" data-act="take" data-key="'+esc(dose.key)+tr('">Іштім</button>');
+  }else{
+    act='<button class="check" data-act="take" data-key="'+esc(dose.key)+tr('" aria-label="Ішілді деп белгілеу: ')+esc(m.name)+'">'+ic('check',18)+'</button>';
+  }
+  return '<div class="dose '+st+'"><div class="pill-ic">'+ic('pill',20)+'</div><div class="dose-main"><div class="dose-name">'+medLine(m)+'</div><div class="dose-meta">'+meta+'</div></div>'+act+'</div>';
+}
+
+function homeHTML(){
+  var k=dkey(new Date()),ds=dosesFor(k),t=ds.filter(function(x){return entry(k,x);}).length,n=ds.length;
+  var pct=n?Math.round(t/n*100):0;
+  var late=ds.filter(function(x){return stateOf(x,k)==='late';}).length;
+  var msg=!n?tr('Кесте бос'):t===n?tr('Бүгінгі дәрілердің бәрі ішілді'):late?tr('Ұмытылған дәрі бар, ішуді ұмытпаңыз'):tr('Келесі дәрінің уақытын қадағалаймыз');
+  var h='<div class="greet"><small>'+greeting()+'</small><h1>'+esc(S.name||tr('Достым'))+'</h1></div>';
+  var lows=lowStock();
+  if(lows.length)h+='<div class="alert"><span>'+ic('alert',20)+tr('</span><span><b>Дәрі таусылып барады:</b> ')+lows.map(function(x){return medLine(x.m)+' (~'+x.r.daysLeft+tr(' күн)');}).join(', ')+tr('. <button class="link" data-act="menu-stock">Қорды қарау</button></span></div>');
+  var earliest=S.meds.map(function(m){return m.added;}).sort()[0]||dkey(new Date()),canPrev=dkey(addDays(weekStart(weekOff),-1))>=earliest;
+  h+='<section><div class="sec-h"><h2>'+weekTitle(weekOff)+tr('</h2><div class="wknav"><button class="x" data-act="wk-prev" aria-label="Алдыңғы апта"')+(canPrev?'':' disabled')+tr('>‹</button><button class="x" data-act="wk-next" aria-label="Келесі апта"')+(weekOff<0?'':' disabled')+'>›</button></div></div><div class="card">'+weekHTML(weekOff)+'</div></section>';
+  h+=tr('<div class="progress"><div class="row"><div class="t">Бүгінгі дәрілер</div><div class="n">')+t+'/'+n+'</div></div><div class="bar"><i style="width:'+pct+'%"></i></div><p>'+msg+'</p></div>';
+  if(!n){
+    h+='<div class="card empty">'+ic('pill',32)+tr('<h3>Кестеңіз әзірге бос</h3><p>Рецептің фотосын түсіріңіз, AI дәрілерді тауып, кесте құрады.</p><button class="btn" data-act="go" data-v="add">')+ic('cam',18)+tr(' Дәрі қосу</button></div>');
+  }else{
+    h+=tr('<section><div class="sec-h"><h2>Бүгінгі кесте</h2><button class="link" data-act="demo-remind">Еске салуды көрсету</button></div><div class="list">')+ds.map(function(d){return doseRow(d,k,false);}).join('')+'</div></section>';
+  }
+  if(n)h+=tr('<div class="card oraza"><div class="row"><div><h3>Дәрі туралы сұрақ</h3><p>Дәрі бітті ме немесе сұрағыңыз бар ма? Дәрігерге жіберуге дайын хабар жасаймыз.</p></div><button class="btn ghost sm" data-act="go" data-v="ask">Жазу</button></div></div>');
+  h+=orazaBanner();
+  if(S.demo)h+=tr('<div class="chipnote">Көрсетілген деректер үлгі <button data-act="clear-demo">Тазалап, өзімдікін қосу</button></div>');
+  h+=tr('<p class="note pad">DenSau диагноз қоймайды және ем тағайындамайды. Дәрі мен дозаны дәрігер тағайындаған рецептке сүйеніп енгізіңіз.</p>');
+  return h;
+}
+
+function relHTML(){
+  var k=dkey(new Date()),ds=dosesFor(k),t=ds.filter(function(x){return entry(k,x);}).length,n=ds.length;
+  var late=ds.filter(function(x){return stateOf(x,k)==='late';});
+  var nm=S.name||tr('Пациент');
+  var h='<div class="who"><div class="avatar">'+esc(nm.charAt(0).toUpperCase())+'</div><div><b>'+esc(nm)+tr('</b><span>Туыс көрінісі, тек қарау</span></div></div>');
+  var rv=S.relative;
+  h+=rv?'<div class="card relcard"><div class="avatar sm">'+esc(rv.name.charAt(0).toUpperCase())+'</div><div class="t"><b>'+esc(rv.name)+'</b><small>'+esc(rv.rel)+' · '+esc(rv.phone)+'</small></div></div>':tr('<div class="card relcard"><div class="t"><b>Қамқор туыс қосылмаған</b><small>Баптаулар бөлімінен қосыңыз</small></div><button class="btn ghost sm" data-act="rel-add">Қосу</button></div>');
+  if(!n){
+    h+='<div class="card empty">'+ic('users',32)+tr('<h3>Қадағалайтын дәрі жоқ</h3><p>Пациент дәрі қосқанда, бұл жерде бүгінгі қабылдау көрінеді.</p></div>');
+    return h;
+  }
+  if(late.length){
+    var l=late[0];
+    h+='<div class="status warn"><b>'+esc(nm)+' '+esc(l.time)+tr(' дәрісін әлі ішкен жоқ</b><span>')+medLine(l.med)+tr('. Хабарласып, ескертіп қойыңыз.</span></div>');
+  }else{
+    h+='<div class="status ok"><b>'+(t===n?tr('Бүгінгі дәрілердің бәрі ішілді'):t+' / '+n+tr(' дәрі ішілді'))+tr('</b><span>Ұмытылған дәрі жоқ</span></div>');
+  }
+  h+=tr('<section><div class="sec-h"><h2>Бүгін</h2></div><div class="list">')+ds.map(function(d){return doseRow(d,k,true);}).join('')+'</div></section>';
+  h+=tr('<section><div class="sec-h"><h2>Осы аптада</h2></div><div class="card">')+weekHTML()+'</div></section>';
+  h+=tr('<p class="note pad">Демода пациент пен туыс бір құрылғыда көрінеді. Нақты қосымшада туыс өз телефонында, пациенттің рұқсатымен көреді.</p>');
+  return h;
+}
+
+/* ---------- oraza + journal ---------- */
+var orazaOpen=false,logType='bp';
+function numOf(id){var el=document.getElementById(id);return el&&el.value!==''?parseFloat(String(el.value).replace(',','.')):NaN;}
+function fmt(n,d){return (+n).toFixed(d).replace('.',',');}
+function dmy(t){var d=new Date(t);return pad(d.getDate())+'.'+pad(d.getMonth()+1);}
+function hm(t){var d=new Date(t);return pad(d.getHours())+':'+pad(d.getMinutes());}
+function vitalsOf(type){return S.vitals.filter(function(v){return v.type===type;}).sort(function(a,b){return a.t-b.t;});}
+function dayRatio(t){var k=dkey(new Date(t)),ds=dosesFor(k);if(!ds.length)return '';var n=ds.filter(function(x){return entry(k,x);}).length;return tr('Сол күні дәрі: ')+n+'/'+ds.length;}
+
+function orazaBanner(){
+  var o=S.oraza;if(!o.on)return '';
+  return tr('<div class="card oraza on"><div class="row"><div><h3>Ораза режимі қосулы</h3><p>Сәрі ')+esc(o.sahur)+tr(', ауызашар ')+esc(o.iftar)+tr('. Күндізгі дәрілер осы уақытқа ауыстырылды.</p></div><button class="btn ghost sm" data-act="menu-open" data-s="oraza">Баптау</button></div></div>');
+}
+function orazaPanel(){
+  var o=S.oraza;
+  if(o.on)return tr('<div class="card oraza on"><div><h3>Ораза режимі қосулы</h3><p>Сәрі ')+esc(o.sahur)+tr(', ауызашар ')+esc(o.iftar)+tr('. Күндізгі дәрілер осы уақытқа ауыстырылған, «әдетте» деген белгіде бастапқы уақыты көрінеді.</p></div><button class="btn ghost block" data-act="oraza-off">Режимді өшіру</button></div>');
+  if(!isPrem())return lockCard(tr('Ораза режимі'),tr('Ораза кезінде дәрі уақытын ауыстыру Premium жоспарында.'));
+  return tr('<div class="card oraza"><div><h3>Ораза режимі</h3><p>Ораза уақытының ішінде түсетін дәрілер сәріге немесе ауызашарға ауысады. Қосылғанда ғана басты бетте көрінеді.</p></div>')+
+  tr('<div class="t2"><div class="fld"><label for="oSahur">Сәрі уақыты</label><input class="inp" type="time" id="oSahur" value="')+esc(o.sahur)+tr('"></div><div class="fld"><label for="oIftar">Ауызашар уақыты</label><input class="inp" type="time" id="oIftar" value="')+esc(o.iftar)+'"></div></div>'+
+  '<div class="alert"><span>'+ic('alert',20)+tr('</span><span>DenSau ораза ұстау туралы кеңес бермейді. Дәрі уақытын өзгертуді алдымен дәрігермен немесе фармацевтпен келісіңіз.</span></div>')+
+  tr('<label class="confirm"><input type="checkbox" id="orOk"><span>Дәрі уақытын дәрігермен келістім</span></label>')+
+  tr('<div class="t2"><button class="btn ghost" data-act="oraza-close">Бас тарту</button><button class="btn" id="orGo" data-act="oraza-on" disabled>Қосу</button></div></div>');
+}
+var PRICE='1 990 ₸',FREE_SCANS=3,subAsk=false,pay={method:'',busy:false},PAYM={kaspi:'Kaspi Pay',card:tr('Банк картасы')};
+function isPrem(){return !!(S.plan&&S.plan.tier==='premium');}
+function lockCard(title,text){return '<div class="card lockcard"><div class="pill-ic">'+ic('lock',20)+'</div><div class="t"><b>'+esc(title)+'</b><small>'+esc(text)+'</small></div><button class="btn sm" data-act="go-sub">Premium</button></div>';}
+function subPanel(){
+  var pr=isPrem(),used=S.scans||0;
+  var rows=[[tr('Дәрі кестесі, күнтізбе, ескерту'),1,1],[tr('Фотодан дәрі тану'),FREE_SCANS+tr(' рет'),tr('шексіз')],[tr('Денсаулық журналына жазу'),1,1],[tr('Журнал графигі'),1,1],[tr('Туыс көрінісі'),1,1],[tr('Дәрі туралы хабарды ИИ-мен жазу'),0,1],[tr('Қабылдауға дайындық (ИИ)'),0,1],[tr('Дәрі қоры және таусылу болжамы'),0,1],[tr('Ораза режимі'),0,1],[tr('Дәрігермен байланыс'),0,tr('жақында')]];
+  function cell(v){return v===1?'<span class="yes">'+ic('check',16)+'</span>':v===0?'<span class="no">—</span>':'<span>'+esc(v)+'</span>';}
+  var h='<div class="card plan'+(pr?' on':'')+tr('"><div class="row"><div><small>Сіздің жоспарыңыз</small><h3>')+(pr?'Premium':tr('Тегін'))+'</h3></div><div class="price">'+(pr?PRICE+tr('<small>/ай</small>'):'0 ₸')+'</div></div>'+
+    (pr?tr('<p class="note">Демо төлем')+(S.plan.method?' ('+esc(PAYM[S.plan.method]||'')+')':'')+tr(': нақты ақша алынбаған.')+(S.plan.since?tr(' Қосылған күн: ')+dmy(S.plan.since)+'.':'')+'</p>':tr('<p class="note">Фото тану: ')+Math.min(used,FREE_SCANS)+' / '+FREE_SCANS+tr(' қолданылды.</p>'))+'</div>';
+  if(!subAsk)h+=tr('<div class="card cmp"><div class="cmph"><span></span><b>Тегін</b><b>Premium</b></div>')+rows.map(function(r){return '<div class="cmpr"><span>'+esc(r[0])+'</span>'+cell(r[1])+cell(r[2])+'</div>';}).join('')+'</div>';
+  if(pr)h+=tr('<button class="btn ghost block" data-act="sub-off">Жазылымды тоқтату</button>');
+  else if(subAsk){
+    h+=tr('<div class="card med-edit"><h3 class="mini">Төлем тәсілі</h3>')+['kaspi','card'].map(function(k){return '<button class="menu-item paym" data-act="pay-method" data-m="'+k+'" aria-pressed="'+(pay.method===k)+'"'+(pay.busy?' disabled':'')+'><div class="pill-ic">'+ic(k==='kaspi'?'phone':'card',20)+'</div><div class="t"><b>'+PAYM[k]+'</b><small>'+(k==='kaspi'?tr('Kaspi қосымшасы арқылы төлеу'):'Visa / Mastercard')+'</small></div><span class="radio'+(pay.method===k?' on':'')+'"></span></button>';}).join('')+
+      tr('<div class="sumrow"><span>Premium, 1 ай</span><b>')+PRICE+'</b></div></div>'+
+      '<div class="alert"><span>'+ic('info',20)+tr('</span><span>Бұл демо төлем: нақты ақша алынбайды, карта нөмірі мен басқа төлем деректері сұралмайды. Нақты төлем жүйесі кейінгі нұсқада қосылады.</span></div>')+
+      '<div class="t2"><button class="btn ghost" data-act="sub-cancel"'+(pay.busy?' disabled':'')+tr('>Бас тарту</button><button class="btn" data-act="sub-pay"')+((pay.method&&!pay.busy)?'':' disabled')+'>'+(pay.busy?tr('Өңделуде…'):tr('Төлеу · ')+PRICE)+'</button></div>';
+  }
+  else h+='<button class="btn block" data-act="sub-ask">'+ic('star',18)+tr(' Premium қосу · ')+PRICE+tr(' / ай</button>');
+  return h+tr('<p class="note">Жоспар шарттары жобаның бизнес-моделін көрсетеді. Бағасы мен құрамы нақты сынақтан кейін нақтыланады.</p>');
+}
+function sf(l,id,v,o){o=o||{};return '<div class="fld"><label for="'+id+'">'+l+'</label><input class="inp" id="'+id+'" type="'+(o.type||'text')+'" value="'+esc(v||'')+'"'+(o.list?' list="'+o.list+'"':'')+(o.ac?' autocomplete="'+o.ac+'"':' autocomplete="off"')+'></div>';}
+function ssel(l,id,v,opts){return '<div class="fld"><label for="'+id+'">'+l+'</label><select class="inp" id="'+id+tr('"><option value="">Таңдаңыз</option>')+opts.map(function(o){return '<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select></div>';}
+function settingsPanel(){
+  var p=S.profile||{},r=S.relative||{};
+  var h=tr('<div class="card med-edit"><h3 class="mini">Профиль</h3>')+sf(tr('Атыңыз'),'sName',S.name)+'</div>'+
+  tr('<div class="card med-edit"><h3 class="mini">Қамқор туыс</h3>')+sf(tr('Аты'),'sRelName',r.name)+ssel(tr('Ол сізге кім'),'sRelRel',r.rel,RELS)+sf(tr('Телефоны'),'sRelPhone',r.phone,{type:'tel'})+tr('<p class="note">Туыстың деректерін оның келісімімен енгізіңіз. Бос қалдырсаңыз, туыс өшіріледі.</p></div>')+
+   tr('<p class="note" id="sErr"></p><button class="btn block" data-act="save-settings">Сақтау</button>');
+  return h;
+}
+function supportPanel(){
+  return tr('<div class="card"><h3 class="mini">Көмек керек пе?</h3><p class="note" style="font-size:14px;color:var(--ink)">Жиі кездесетін сұрақтардың жауабы төменде. Денсаулыққа қатысты шұғыл жағдайда қосымшаға емес, 112 нөміріне қоңырау шалыңыз.</p></div>')+
+  tr('<ul class="about faq"><li><b>Ескерту келмей жатыр.</b> Демо нұсқада ескерту қосымша ашық тұрғанда ғана көрсетіледі. Телефонға нақты push-хабарлама келесі нұсқада жасалады.</li><li><b>Фотодан дәрі танылмады.</b> Фотоны жарық жерде, мәтін анық көрінетіндей түсіріңіз немесе дәріні қолмен қосыңыз.</li><li><b>Деректерім қайда?</b> Тек осы құрылғыдағы браузерде. Браузер деректерін тазаласаңыз, олар өшеді.</li><li><b>Деректі өшіргім келеді.</b> «Келісімдер» бөлімінде келісімді қайтарып алсаңыз, барлық дерек өшеді.</li></ul>');
+}
+var menu=null;
+function renderMenu(){
+  var el=$('#drawer');
+  if(!menu){el.innerHTML='';return;}
+  var title={main:tr('Қосымша'),sub:tr('Жазылым'),settings:tr('Баптаулар'),support:tr('Техникалық қолдау'),oraza:tr('Ораза режимі'),about:tr('Жауапты AI және дерек'),consent:tr('Келісімдер'),'doc-terms':tr('Пайдаланушы келісімі'),'doc-privacy':tr('Құпиялылық саясаты')}[menu]||tr('Қосымша'),body='';
+  var back=menu!=='main'?'<button class="link" data-act="menu-go" data-s="'+(menu.indexOf('doc-')===0?'consent':'main')+tr('">← Артқа</button>'):'';
+  if(menu==='main'){
+    var pr=S.profile||{};
+    body=langSw()+'<div class="who prof"><div class="avatar">'+esc((S.name||tr('Д')).charAt(0).toUpperCase())+'</div><div><b>'+esc(S.name||tr('Достым'))+'</b><span>'+esc(pr.phone||pr.email||'')+'</span></div></div>'+
+    '<button class="menu-item" data-act="menu-go" data-s="sub"><div class="pill-ic">'+ic('star',20)+tr('</div><div class="t"><b>Жазылым</b><small>')+(isPrem()?tr('Premium қосулы'):tr('Тегін жоспар · Premium ')+PRICE+tr('/ай'))+'</small></div></button>'+
+    '<button class="menu-item" data-act="menu-go" data-s="consent"><div class="pill-ic">'+ic('shield',20)+tr('</div><div class="t"><b>Келісімдер</b><small>Құжаттар, келісімді қайтару</small></div></button>')+
+    '<button class="menu-item" data-act="menu-go" data-s="oraza"><div class="pill-ic">'+ic('moon',20)+tr('</div><div class="t"><b>Ораза режимі</b><small>')+(S.oraza.on?tr('Қосулы'):tr('Өшірулі'))+'</small></div></button>'+
+    '<button class="menu-item" data-act="menu-ask"><div class="pill-ic">'+ic('info',20)+tr('</div><div class="t"><b>Дәрі туралы сұрақ</b><small>Дәрігерге хабар дайындау</small></div></button>')+
+    '<button class="menu-item" data-act="menu-prep"><div class="pill-ic">'+ic('chart',20)+tr('</div><div class="t"><b>Қабылдауға дайындық</b><small>')+(isPrem()?tr('Дәрігерге ИИ-конспект'):tr('Premium · ИИ-конспект'))+'</small></div></button>'+
+    '<button class="menu-item" data-act="menu-stock"><div class="pill-ic">'+ic('pill',20)+tr('</div><div class="t"><b>Дәрі қоры</b><small>')+(isPrem()?tr('Қашан таусылады'):tr('Premium · таусылу болжамы'))+'</small></div></button>'+
+    '<button class="menu-item" data-act="menu-go" data-s="settings"><div class="pill-ic">'+ic('gear',20)+tr('</div><div class="t"><b>Баптаулар</b><small>Профиль, қамқор туыс</small></div></button>')+
+    '<button class="menu-item" data-act="menu-go" data-s="support"><div class="pill-ic">'+ic('help',20)+tr('</div><div class="t"><b>Техникалық қолдау</b><small>Сұрақ пен байланыс</small></div></button>');
+  }else if(menu==='sub'){
+    body=subPanel();
+  }else if(menu==='settings'){
+    body=settingsPanel();
+  }else if(menu==='support'){
+    body=supportPanel();
+  }else if(menu==='oraza'){
+    body=orazaPanel();
+  }else if(menu==='consent'){
+    body=consentPanel();
+  }else if(menu==='doc-terms'||menu==='doc-privacy'){
+    body=docBody(menu.slice(4),true);
+  }else{
+    body=tr('<ul class="about"><li>AI диагноз қоймайды және ем тағайындамайды, тек құжатта жазылғанды кестеге айналдырады.</li><li>Дәрі атауы мен дозасын әрқашан өзіңіз тексеріп растайсыз.</li><li>Фото тануға ғана ИИ қызметіне жіберіледі, DenSau оны сақтамайды.</li><li>Кесте мен журнал деректері тек сіздің құрылғыңыздағы браузерде сақталады.</li><li>Қысым мен қант мәндерін DenSau бағаламайды, шешімді дәрігер қабылдайды.</li></ul>');
+  }
+  el.innerHTML='<div class="scrim" data-act="menu-close"><div class="sheet" data-act="noop" role="dialog" aria-modal="true" aria-label="'+title+'">'+back+'<div class="sh"><h2>'+title+tr('</h2><button class="menubtn" id="menuClose" data-act="menu-close" aria-label="Жабу">')+ic('x',20)+'</button></div>'+body+'</div></div>';
+}
+
+function chartHTML(type){
+  var pts=vitalsOf(type).slice(-14);
+  if(pts.length<2)return tr('<p class="note">График үшін кемінде 2 өлшем жазыңыз.</p>');
+  var W=340,H=180,L=36,R=10,T=10,B=26,two=type==='bp',vals=[];
+  pts.forEach(function(p){vals.push(+p.a);if(two)vals.push(+p.b);});
+  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),pd=(mx-mn)*0.15||1;mn-=pd;mx+=pd;
+  function X(i){return L+(W-L-R)*(i/(pts.length-1));}
+  function Y(v){return T+(H-T-B)*(1-(v-mn)/(mx-mn));}
+  var dec=two?0:1,g='';
+  for(var i=0;i<=3;i++){var v=mn+(mx-mn)*i/3,yy=Y(v);g+='<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'"/><text x="'+(L-6)+'" y="'+(yy+4).toFixed(1)+'" text-anchor="end">'+fmt(v,dec)+'</text>';}
+  function line(key,cls,mk){
+    var d=pts.map(function(p,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(+p[key]).toFixed(1);}).join(' ');
+    var m=pts.map(function(p,i){var x=X(i).toFixed(1),y=Y(+p[key]).toFixed(1);
+      return mk==='c'?'<circle class="m1" cx="'+x+'" cy="'+y+'" r="3.5"/>':'<rect class="m2" x="'+(x-3.5)+'" y="'+(y-3.5)+'" width="7" height="7" transform="rotate(45 '+x+' '+y+')"/>';}).join('');
+    return '<path class="'+cls+'" d="'+d+'"/>'+m;
+  }
+  var body=line('a','l1','c')+(two?line('b','l2','d'):'');
+  var xl='<text x="'+L+'" y="'+(H-6)+'">'+dmy(pts[0].t)+'</text><text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end">'+dmy(pts[pts.length-1].t)+'</text>';
+  var dotK='<svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4" style="fill:var(--teal-ink)"/></svg>';
+  var diaK='<svg width="14" height="14" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" style="fill:var(--coral)" transform="rotate(45 7 7)"/></svg>';
+  var key=two?'<div class="key"><span>'+dotK+tr('Жоғарғы (систолалық)</span><span>')+diaK+tr('Төменгі (диастолалық)</span></div>'):'<div class="key"><span>'+dotK+tr('Қант, ммоль/л</span></div>');
+  return key+'<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(two?tr('Қан қысымы'):tr('Қант деңгейі'))+tr(' графигі, соңғы ')+pts.length+tr(' өлшем">')+g+body+xl+'</svg>';
+}
+function statsHTML(type){
+  var pts=vitalsOf(type);if(!pts.length)return '';
+  var two=type==='bp',last=pts[pts.length-1],r=pts.slice(-14);
+  function avg(k){var s=0;r.forEach(function(p){s+=+p[k];});return s/r.length;}
+  var lv=two?last.a+'/'+last.b:fmt(last.a,1),av=two?Math.round(avg('a'))+'/'+Math.round(avg('b')):fmt(avg('a'),1);
+  return tr('<div class="stats"><div class="stat"><small>Соңғысы</small><b>')+lv+tr('</b></div><div class="stat"><small>Орташа</small><b>')+av+tr('</b></div><div class="stat"><small>Өлшем саны</small><b>')+pts.length+'</b></div></div>';
+}
+function logHTML(){
+  var two=logType==='bp';
+  var h=tr('<div><h1 class="h-title">Денсаулық журналы</h1><p class="h-sub">Өлшемдерді жазыңыз, график дәрігерге көрсетуге ыңғайлы.</p></div>');
+  h+=tr('<div class="seg" role="group" aria-label="Өлшем түрі"><button data-act="logtype" data-v="bp" aria-pressed="')+two+tr('">Қан қысымы</button><button data-act="logtype" data-v="glu" aria-pressed="')+(!two)+tr('">Қант</button></div>');
+  h+='<div class="card med-edit">';
+  if(two)h+=tr('<div class="t3"><div class="fld"><label for="vSys">Жоғарғы</label><input class="inp" id="vSys" type="number" inputmode="numeric" placeholder="120"></div><div class="fld"><label for="vDia">Төменгі</label><input class="inp" id="vDia" type="number" inputmode="numeric" placeholder="80"></div><div class="fld"><label for="vPul">Пульс</label><input class="inp" id="vPul" type="number" inputmode="numeric" placeholder="70"></div></div>');
+  else h+=tr('<div class="t2"><div class="fld"><label for="vGlu">Қант, ммоль/л</label><input class="inp" id="vGlu" type="number" inputmode="decimal" step="0.1" placeholder="5,6"></div><div class="fld"><label for="vCtx">Қашан</label><select class="inp" id="vCtx"><option>Аш қарынға</option><option>Тамақтан кейін</option><option>Басқа уақытта</option></select></div></div>');
+  h+='<button class="btn block" data-act="log-add">'+ic('plus',18)+tr(' Жазу</button></div>');
+  h+='<div class="card">'+chartHTML(logType)+statsHTML(logType)+'</div>';
+  var list=vitalsOf(logType).slice(-8).reverse();
+  if(list.length){
+    h+=tr('<section><div class="sec-h"><h2>Соңғы жазбалар</h2></div><div class="list">')+list.map(function(v){
+      var val=two?v.a+'/'+v.b+(v.c?tr(' · пульс ')+v.c:''):fmt(v.a,1)+tr(' ммоль/л');
+      return '<div class="entry"><div class="m"><div class="v">'+esc(val)+'</div><small>'+dmy(v.t)+' '+hm(v.t)+(v.ctx?' · '+esc(v.ctx):'')+'</small><small>'+esc(dayRatio(v.t))+'</small></div><button class="x" data-act="log-del" data-id="'+esc(v.id)+tr('" aria-label="Жазбаны өшіру">')+ic('x',16)+'</button></div>';
+    }).join('')+'</div></section>';
+  }
+  h+=tr('<p class="note pad">DenSau мәндерді бағаламайды және диагноз қоймайды. Қысым мен қант туралы шешімді дәрігер қабылдайды.</p>');
+  return h;
+}
+
+/* ---------- legal + onboarding + ask ---------- */
+var OPERATOR={name:tr('DenSau командасы (студенттік жоба)'),email:''};
+var DRAFT_NOTE=tr('Демо нұсқа (құжат нұсқасы 0.1). Мәтін нақты қолданысқа шығар алдында заңгер тексеруінен өтеді.');
+var LEGAL={
+ terms:{title:tr('Пайдаланушы келісімі'),sec:[
+  [tr('1. Қосымша туралы'),tr('DenSau — дәрі қабылдау кестесін құруға және еске салуға көмектесетін оқу және пилоттық қосымша. Ол медициналық қызмет емес: диагноз қоймайды, ем тағайындамайды және дәрігер кеңесін алмастырмайды.')],
+  [tr('2. Жасанды интеллект'),tr('ИИ рецепт, дәрі қорабы немесе выписка фотосынан дәрі атауын, дозасын және уақытын оқиды. ИИ қателесуі мүмкін. Сіз әрқашан нәтижені құжатпен салыстырып, түзетіп, растайсыз. Растамайынша, ештеңе кестеге қосылмайды.')],
+  [tr('3. Еске салу'),tr('Еске салу қосымша ашық тұрғанда ғана көрсетіледі, оның уақытында келетініне кепілдік жоқ. Дәрі қабылдауға жауапкершілік өзіңізде.')],
+  [tr('4. Шұғыл жағдай'),tr('Жағдайыңыз нашарласа немесе шұғыл белгілер болса (кеуде ауруы, тыныс алу қиындығы, есінен тану), 112-ге қоңырау шалыңыз. Қосымша бұл үшін жасалмаған.')],
+  [tr('5. Дәрі туралы сұрақ'),tr('Қосымша сұрағыңызды дәрігерге немесе фармацевке жіберуге арналған хабарға айналдырады. Дәрі ауыстыру немесе доза туралы шешімді тек дәрігер қабылдайды.')],
+  [tr('6. Жас'),tr('Қосымшаны 18 жастан асқан адам немесе заңды өкілінің келісімімен қолдана алады.')],
+  [tr('7. Жауапкершілік'),tr('Қосымша «қалай бар солай» ұсынылады және медициналық шешім қабылдауға негіз бола алмайды.')]]},
+ privacy:{title:tr('Құпиялылық саясаты және деректерді өңдеуге келісім'),sec:[
+  [tr('1. Оператор'),OPERATOR.name+'.'],
+  [tr('2. Субъект және деректер тізімі'),tr('Субъект — сіз (қосымша пайдаланушысы). Өңделетін деректер: атыңыз (міндетті емес); қамқор туысыңыздың аты, туыстық дәрежесі және телефоны (оның келісімімен); дәрі тізімі (атауы, дозасы, уақыты); қабылдау белгілері; қан қысымы мен қант өлшемдері; ораза режимінің уақыттары; келісім күні. Дәрі туралы хабарды ИИ-мен құрастырғанда осы деректердің қажетті бөлігі ИИ қызметіне жіберіледі (тек бөлек келісім берсеңіз).')],
+  [tr('3. Мақсаты'),tr('Тек сіздің дәрі кестеңізді жүргізу, еске салу, журнал графигін көрсету және дәрігерге хабар дайындау. Жарнамаға және басқа мақсатқа қолданылмайды.')],
+  [tr('4. Қайда сақталады'),tr('Бұл нұсқада деректер тек сіздің құрылғыңыздағы браузерде сақталады. Тек фотодан тану қолданылғанда сурет ИИ қызметіне жіберіледі (сайт нұсқасында ол DenSau-дың шағын сервер функциясы арқылы өтеді, бірақ сақталмайды). Браузер деректерін тазаласаңыз, олар жоғалады.')],
+  [tr('5. Фото және ИИ'),tr('Фото тану үшін сіз таңдаған сурет ИИ қызметіне (Google Gemini) жіберіледі. Ол Қазақстаннан тыс жерде өңделуі мүмкін (шетелге беру). Бұл тек сіз бөлек келісім бергенде орындалады. DenSau фотоны өзі сақтамайды, ал ИИ қызметінің өз ережелері қолданылады.')],
+  [tr('6. Үшінші тұлғаларға беру'),tr('Басқа адамға (мысалы, туысқа) деректер тек сіздің рұқсатыңызбен көрсетіледі. Бұл нұсқада туыс көрінісі демо және бір құрылғыда ғана жұмыс істейді.')],
+  [tr('7. Мерзімі'),tr('Деректер келісімді қайтарып алғанша немесе өшіргенше құрылғыңызда сақталады.')],
+  [tr('8. Құқықтарыңыз'),tr('Мәзірдегі «Келісімдер» бөлімінде келісімді қайтарып алуға және барлық деректі өшіруге болады. Деректі түзету үшін «Баптаулар» бөлімін қолданыңыз, басқа сұраққа «Техникалық қолдау» бөлімі арқылы жазыңыз.')],
+  [tr('9. Құқықтық негіз'),tr('Осы келісім Қазақстан Республикасының 2013 жылғы 21 мамырдағы № 94-V «Дербес деректер және оларды қорғау туралы» Заңына (https://adilet.zan.kz/rus/docs/Z1300000094) сәйкес беріледі. Заңның 8-бабы бойынша келісімде оператор, субъект, өңдеу мерзімі, үшінші тұлғаға және шетелге беру, деректер тізімі көрсетілуі тиіс: олар осы құжаттың 1–7 тармақтарында келтірілген.')],
+  [tr('10. Келісімді қайтарып алу'),tr('Келісімді қосымшаның «Келісімдер» бөлімінен қайтарып алуға болады. Заң бойынша өңдеу 15 жұмыс күні ішінде тоқтатылады, ал осы құрылғыдағы дерек қайтарып алған сәтте өшіріледі.')],
+  [tr('11. Серверлік нұсқа'),tr('Болашақта деректер серверге көшірілсе, олар Қазақстан аумағындағы базада сақталады және сізден қайта келісім сұралады.')]]}
+};
+LEGAL.ai={title:tr('Фотоны ИИ-мен танытуға келісім'),sec:[
+  [tr('1. Не жіберіледі'),tr('Дәрі қосқанда сіз таңдаған фото (рецепт, дәрі қорабы, выписка немесе скриншот). «Дәрі туралы сұрақ» бөлімінде хабар жасау үшін сіз таңдаған дәрінің атауы, дозасы және қабылдау белгілері.')],
+  [tr('2. Кімге жіберіледі'),tr('ИИ қызметіне: Google Gemini. Ол деректі Қазақстаннан тыс жерде өңдеуі мүмкін (шетелге беру).')],
+  [tr('3. Мақсаты'),tr('Тек фотодан дәрі мәліметін оқу және дәрігерге жіберілетін хабарды құрастыру. DenSau фотоны өзі сақтамайды, ал ИИ қызметінің өз ережелері қолданылады.')],
+  [tr('4. Міндетті емес'),tr('Келіспесеңіз де қосымшаны қолдана аласыз: дәріні қолмен қосасыз. Келісімді кез келген уақытта «Келісімдер» бөлімінде қайтарып алуға болады.')]]};
+function lnk(t){return t.replace(/(https?:\/\/[^\s<)]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');}
+function docBody(kind,noTitle){
+  var d=LEGAL[kind];
+  var h='<div class="doc">'+(noTitle?'':'<h2>'+esc(d.title)+'</h2>');
+  d.sec.forEach(function(x){h+='<h3>'+esc(x[0])+'</h3><p>'+lnk(esc(x[1]))+'</p>';});
+  return h+'<p class="note docnote">'+esc(DRAFT_NOTE)+'</p></div>';
+}
+function dstr(t){return t?dmy(t)+' '+hm(t):tr('берілмеген');}
+function needsConsent(){return !(S.consent&&S.consent.terms&&S.consent.privacy)||S.session===false;}
+function newOb(){return {step:'welcome',name:'',phone:'',email:'',pass:'',pass2:'',birth:'',bd:{d:'',m:'',y:''},city:'',gender:'',age:false,relName:'',relRel:'',relPhone:'',lid:'',lpass:'',ai:false,wipe:false,msg:'',done:{}};}
+var ob=newOb(),withdrawAsk=false;
+function hasProfile(){return !!(S.consent&&S.consent.terms&&S.consent.privacy);}
+function brandHTML(){return '<div class="brand"><div class="mark">D</div><div>Den<b>Sau</b></div></div>';}
+function stepsHTML(n){return '<div class="steps">'+[1,2,3].map(function(i){return '<i'+(i<=n?' class="on"':'')+'></i>';}).join('')+'</div>';}
+function welcomePage(){
+  var h='<div class="wel">'+langSw()+tr('<div><div class="mark">D</div><h1>Den<b>Sau</b></h1><p class="h-sub">Дәріңізді уақытында ішуге көмектесетін көмекші</p></div>');
+  if(ob.msg)h+='<div class="alert"><span>'+ic('alert',20)+'</span><span>'+esc(ob.msg)+'</span></div>';
+  h+=tr('<div class="wel-btns"><button class="btn block" data-act="ob-start">Демоны бастау</button></div>');
+  return h+tr('<p class="note">Бастау арқылы сіз пайдаланушы келісімі мен құпиялылық саясатымен келісесіз. Оларды мәзірдегі «Келісімдер» бөлімінен оқи аласыз. Деректер тек осы құрылғыда сақталады.</p></div>');
+}
+var CITIES=[tr('Астана'),tr('Алматы'),tr('Шымкент'),tr('Қарағанды'),tr('Ақтөбе'),tr('Тараз'),tr('Павлодар'),tr('Өскемен'),tr('Семей'),tr('Атырау'),tr('Қостанай'),tr('Қызылорда'),tr('Орал'),tr('Петропавл'),tr('Ақтау'),tr('Түркістан'),tr('Көкшетау'),tr('Талдықорған'),tr('Қапшағай'),tr('Басқа')];
+function normPhone(v){var d=String(v||'').replace(/\D/g,'');if(d.length===11&&(d[0]==='8'||d[0]==='7'))d=d.slice(1);return d.length===10?'+7'+d:'';}
+function emailOk(v){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);}
+function ageOf(b){if(!/^\d{4}-\d{2}-\d{2}$/.test(b))return -1;var d=new Date(b+'T00:00:00'),n=new Date();if(isNaN(d)||d>n||d.getFullYear()<1900)return -1;var a=n.getFullYear()-d.getFullYear();if(n.getMonth()<d.getMonth()||(n.getMonth()===d.getMonth()&&n.getDate()<d.getDate()))a--;return a;}
+function obIssue(st){
+  if(st==='acc'){
+    if(!ob.name.trim())return tr('Атыңызды жазыңыз.');
+    if(!normPhone(ob.phone))return tr('Телефон нөмірін толық жазыңыз (10 сан, мысалы 701 234 56 78).');
+    if(ob.email.trim()&&!emailOk(ob.email.trim()))return tr('Email дұрыс емес. Жоқ болса, бос қалдырыңыз.');
+    if(ob.pass.length<6)return tr('Құпиясөз кемінде 6 таңба болуы керек.');
+    if(ob.pass!==ob.pass2)return tr('Құпиясөздер сәйкес емес.');
+    return '';
+  }
+  if(st==='about'){
+    var a=ageOf(ob.birth);
+    if(a<0)return tr('Туған күнді таңдаңыз.');
+    if(!ob.city.trim())return tr('Қаланы таңдаңыз немесе жазыңыз.');
+    if(!ob.gender)return tr('Жынысты таңдаңыз.');
+    if(a<18&&!ob.age)return tr('18 жасқа толмасаңыз, заңды өкілдің келісімін растаңыз.');
+    return '';
+  }
+  if(st==='family'){
+    if(!ob.relName.trim())return tr('Туыстың атын жазыңыз.');
+    if(!ob.relRel)return tr('Кім болып келетінін таңдаңыз.');
+    if(!normPhone(ob.relPhone))return tr('Туыстың телефонын толық жазыңыз.');
+    return '';
+  }
+  if(st==='login')return (ob.lid.trim()&&ob.lpass)?'':tr('Телефон немесе email және құпиясөзді жазыңыз.');
+  return '';
+}
+function obUpd(){var b=document.getElementById('obNext');if(b)b.disabled=!!obIssue(ob.step);}
+var MONTHS=[tr('Қаңтар'),tr('Ақпан'),tr('Наурыз'),tr('Сәуір'),tr('Мамыр'),tr('Маусым'),tr('Шілде'),tr('Тамыз'),tr('Қыркүйек'),tr('Қазан'),tr('Қараша'),tr('Желтоқсан')];
+function bdCompose(b){
+  if(!(b.d&&b.m&&b.y))return '';
+  var d=+b.d,m=+b.m,y=+b.y,t=new Date(y,m-1,d);
+  if(t.getFullYear()!==y||t.getMonth()!==m-1||t.getDate()!==d)return '';
+  return y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2);
+}
+function bdParse(v){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||'');return m?{y:m[1],m:String(+m[2]),d:String(+m[3])}:{d:'',m:'',y:''};}
+function bdHTML(p,b){
+  var d=tr('<option value="">Күні</option>'),m=tr('<option value="">Айы</option>'),y=tr('<option value="">Жылы</option>'),i,cy=new Date().getFullYear();
+  for(i=1;i<=31;i++)d+='<option value="'+i+'"'+(String(b.d)===String(i)?' selected':'')+'>'+i+'</option>';
+  for(i=0;i<12;i++)m+='<option value="'+(i+1)+'"'+(String(b.m)===String(i+1)?' selected':'')+'>'+MONTHS[i]+'</option>';
+  for(i=cy;i>=cy-110;i--)y+='<option value="'+i+'"'+(String(b.y)===String(i)?' selected':'')+'>'+i+'</option>';
+  return tr('<div class="fld"><label>Туған күні</label><div class="bd"><select class="inp" id="')+p+tr('D" data-bd="d" aria-label="Күні">')+d+'</select><select class="inp" id="'+p+tr('M" data-bd="m" aria-label="Айы">')+m+'</select><select class="inp" id="'+p+tr('Y" data-bd="y" aria-label="Жылы">')+y+'</select></div></div>';
+}
+function bdRead(p){
+  var g=function(k){var e=document.getElementById(p+k);return e?e.value:'';};
+  return {d:g('D'),m:g('M'),y:g('Y')};
+}
+function obf(l,k,o){o=o||{};return '<div class="fld"><label for="ob_'+k+'">'+l+'</label><input class="inp" id="ob_'+k+'" data-ob="'+k+'" type="'+(o.type||'text')+'" value="'+esc(ob[k]||'')+'"'+(o.ph?' placeholder="'+esc(o.ph)+'"':'')+(o.ac?' autocomplete="'+o.ac+'"':'')+(o.im?' inputmode="'+o.im+'"':'')+(o.max?' max="'+o.max+'"':'')+(o.list?' list="'+o.list+'"':'')+'></div>';}
+function obsel(l,k,opts){return '<div class="fld"><label for="ob_'+k+'">'+l+'</label><select class="inp" id="ob_'+k+'" data-ob="'+k+tr('"><option value="">Таңдаңыз</option>')+opts.map(function(o){return '<option'+(ob[k]===o?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select></div>';}
+var RELS=[tr('Ана'),tr('Әке'),tr('Жұбай'),tr('Бала'),tr('Аға / іні'),tr('Әпке / сіңлі'),tr('Әже / ата'),tr('Басқа туыс')];
+function accPage(){
+  return '<div class="ob">'+brandHTML()+stepsHTML(1)+tr('<div><h1>Тіркелу</h1><p class="h-sub">Кейін осы телефонмен (немесе email-мен) және құпиясөзбен кіресіз.</p></div><div class="card med-edit">')+
+   obf(tr('Атыңыз'),'name',{ph:tr('Мысалы, Айгерім'),ac:'given-name'})+obf(tr('Телефон нөмірі'),'phone',{type:'tel',ph:'+7 701 234 56 78',ac:'tel',im:'tel'})+obf(tr('Email (міндетті емес)'),'email',{type:'email',ph:'name@mail.com',ac:'email'})+obf(tr('Құпиясөз ойлап табыңыз'),'pass',{type:'password',ph:tr('Кемінде 6 таңба'),ac:'new-password'})+obf(tr('Құпиясөзді қайталаңыз'),'pass2',{type:'password',ac:'new-password'})+'</div>'+
+   '<p class="note" id="obHint"></p><button class="btn block" id="obNext" data-act="ob-next"'+(obIssue('acc')?' disabled':'')+tr('>Келесі</button><button class="link" data-act="ob-back" style="align-self:center">Артқа</button></div>');
+}
+function aboutPage(){
+  var a=ageOf(ob.birth),minor=a>=0&&a<18;
+  return '<div class="ob">'+brandHTML()+stepsHTML(2)+tr('<div><h1>Өзіңіз туралы</h1><p class="h-sub">Бұл деректер тек сіздің профиліңізде қалады.</p></div><div class="card med-edit">')+
+   bdHTML('ob',ob.bd)+obf(tr('Қала'),'city',{ph:tr('Мысалы, Астана'),ac:'address-level2',list:'cityList'})+'<datalist id="cityList">'+CITIES.map(function(c){return '<option value="'+c+'">';}).join('')+'</datalist>'+obsel(tr('Жынысы'),'gender',[tr('Әйел'),tr('Еркек'),tr('Көрсеткім келмейді')])+'</div>'+
+   (minor?'<label class="confirm"><input type="checkbox" data-ob="age"'+(ob.age?' checked':'')+tr('><span>Мен 18 жасқа толмадым, заңды өкілімнің келісімі бар</span></label>'):'')+
+   '<p class="note" id="obHint"></p><button class="btn block" id="obNext" data-act="ob-next"'+(obIssue('about')?' disabled':'')+tr('>Келесі</button><button class="link" data-act="ob-back" style="align-self:center">Артқа</button></div>');
+}
+function familyPage(){
+  return '<div class="ob">'+brandHTML()+stepsHTML(3)+tr('<div><h1>Қамқор туысыңыз</h1><p class="h-sub">Сізді қадағалап, дәрі ішкеніңізді көріп отыратын отбасы мүшесі. Қазір қоспасаңыз, кейін Баптаулардан қосасыз.</p></div><div class="card med-edit">')+
+   obf(tr('Туыстың аты'),'relName',{ph:tr('Мысалы, Мадина')})+obsel(tr('Ол сізге кім'),'relRel',RELS)+obf(tr('Туыстың телефоны'),'relPhone',{type:'tel',ph:'+7 777 123 45 67',im:'tel'})+'</div>'+
+   '<div class="alert"><span>'+ic('info',20)+tr('</span><span>Туыстың байланыс деректерін оның келісімімен енгізіңіз. Демо нұсқада оған хабарлама жіберілмейді, дерек тек осы құрылғыда сақталады.</span></div>')+
+   '<p class="note" id="obHint"></p><button class="btn block" id="obNext" data-act="ob-next"'+(obIssue('family')?' disabled':'')+tr('>Қосу және жалғастыру</button><button class="btn ghost block" data-act="ob-skip-rel">Қазір емес, өткізіп жіберу</button><button class="link" data-act="ob-back" style="align-self:center">Артқа</button></div>');
+}
+function loginPage(){
+  var h='<div class="ob">'+brandHTML()+tr('<div><h1>Кіру</h1><p class="h-sub">Тіркелгенде жазған телефонды немесе email-ді енгізіңіз.</p></div>');
+  if(ob.msg)h+='<div class="alert"><span>'+ic('alert',20)+'</span><span>'+esc(ob.msg)+'</span></div>';
+  h+='<div class="card med-edit">'+obf(tr('Телефон немесе email'),'lid',{ac:'username'})+obf(tr('Құпиясөз'),'lpass',{type:'password',ac:'current-password'})+'</div>'+
+   '<button class="btn block" id="obNext" data-act="ob-do-login"'+(obIssue('login')?' disabled':'')+tr('>Кіру</button>')+
+   tr('<p class="note">Құпиясөзді ұмыттыңыз ба? Демо нұсқада серверсіз қалпына келтіру жоқ: тек қайта тіркелуге болады, ол кезде ескі деректер өшеді.</p>')+
+   tr('<button class="link" data-act="ob-reg" style="align-self:center">Қайта тіркелу</button><button class="link" data-act="ob-back" style="align-self:center">Артқа</button></div>');
+  return h;
+}
+function modalHTML(kind){
+  var d=LEGAL[kind],done=!!ob.done[kind];
+  return '<div class="cm-scrim"><div class="cm" role="dialog" aria-modal="true" aria-label="'+esc(d.title)+'"><div class="cm-bar"><i id="cmBar" style="width:'+(done?100:0)+'%"></i></div><div class="cm-body" id="cmBody" tabindex="0">'+docBody(kind)+'</div><div class="cm-foot"><p class="note" id="cmHint">'+(done?tr('Оқылды. Енді келісе аласыз.'):tr('Келісу үшін мәтінді соңына дейін оқыңыз.'))+'</p><div class="cm-acts"><button class="btn ghost" data-act="cm-no">'+(kind==='ai'?tr('Қазір емес'):tr('Келіспеймін'))+'</button><button class="btn" id="cmGo" data-act="cm-yes"'+(done?'':' disabled')+tr('>Келісемін</button></div></div></div></div>');
+}
+function cmCheck(el){
+  if(!el)return;
+  var max=el.scrollHeight-el.clientHeight,pct=max<=6?100:Math.min(100,Math.round(el.scrollTop/max*100));
+  var end=max<=6||el.scrollTop>=max-6;
+  var bar=document.getElementById('cmBar'),go=document.getElementById('cmGo'),hint=document.getElementById('cmHint');
+  if(end)ob.done[ob.step]=true;
+  var ok=!!ob.done[ob.step];
+  if(bar)bar.style.width=(ok?100:pct)+'%';
+  if(go)go.disabled=!ok;
+  if(hint)hint.textContent=ok?tr('Оқылды. Енді келісе аласыз.'):tr('Келісу үшін мәтінді соңына дейін оқыңыз (')+pct+'%).';
+}
+function onboardHTML(){
+  var st=ob.step;
+  if(st==='welcome')return welcomePage();
+  if(st==='login')return loginPage();
+  if(st==='declined')return '<div class="ob">'+brandHTML()+'<div class="card empty">'+ic('shield',32)+tr('<h3>Келісімсіз қолдануға болмайды</h3><p>DenSau дәрі мен денсаулыққа қатысты деректермен жұмыс істейді. Пайдаланушы келісімі мен деректерді өңдеуге келісім болмаса, қосымшаны ашпаймыз және ешқандай дерек сақтамаймыз.</p><button class="btn" data-act="ob-retry">Келісімдерді қайта қарау</button></div></div>');
+  if(st==='acc')return accPage();
+  if(st==='about')return aboutPage();
+  if(st==='family')return familyPage();
+  if(st==='terms'||st==='privacy'||st==='ai')return welcomePage()+modalHTML(st);
+  return welcomePage();
+}
+function rndSalt(){try{var a=new Uint8Array(16);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(x){return ('0'+x.toString(16)).slice(-2);}).join('');}catch(e){return String(Math.random()).slice(2)+Date.now();}}
+async function hashPw(salt,pw){
+  try{if(window.crypto&&crypto.subtle){var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pw));return Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');}}catch(e){}
+  var h=5381,t=salt+':'+pw;for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return 'x'+h;
+}
+async function obFinish(){
+  var tn=Date.now();
+  if(ob.name.trim())S.name=ob.name.trim();
+  if(S.demo&&!S.relative)S.relative={name:tr('Мадина'),rel:tr('Бала'),phone:'+77771234567'};
+  S.consent={terms:tn,privacy:tn,ai:ob.ai?tn:null,ver:'0.1'};S.session=true;
+  save();view='home';menu=null;ob=newOb();render();window.scrollTo(0,0);toast(tr('Қош келдіңіз, ')+(S.name||''));
+}
+function consentPanel(){
+  var c=S.consent||{};
+  var h='<div class="card list">'+
+   tr('<div class="docrow"><div class="m"><b>Пайдаланушы келісімі</b><small>Қабылданды: ')+dstr(c.terms)+tr('</small></div><button class="btn ghost sm" data-act="menu-go" data-s="doc-terms">Оқу</button></div>')+
+   tr('<div class="docrow"><div class="m"><b>Құпиялылық саясаты</b><small>Қабылданды: ')+dstr(c.privacy)+tr('</small></div><button class="btn ghost sm" data-act="menu-go" data-s="doc-privacy">Оқу</button></div></div>');
+  h+='<label class="confirm"><input type="checkbox" id="aiConsent"'+(c.ai?' checked':'')+tr('><span>Фотоны және дәрі деректерін ИИ-ге жіберуге келісемін (Google Gemini; шетелде өңделуі мүмкін)</span></label>');
+  h+=withdrawAsk?'<div class="alert"><span>'+ic('alert',20)+tr('</span><span>Келісімді қайтарып алсаңыз, барлық дерек осы құрылғыдан өшеді және қосымша жабылады. Қайтару мүмкін емес.</span></div><button class="btn coral block" data-act="withdraw">Иә, келісімді қайтарып, деректі өшіру</button>'):tr('<button class="btn ghost block" data-act="withdraw">Келісімді қайтарып алу және деректі өшіру</button>');
+  return h;
+}
+
+var ASK_TOPICS=[['run_out',tr('Дәрі таусылып жатыр')],['missed',tr('Дозаны ұмытып кеттім')],['alt',tr('Орнына басқа дәрі ішуге бола ма деген сұрақ')],['how',tr('Қалай ішу керек екенін нақтылау (тамақпен, уақыты)')]];
+var ask={medId:'',topic:'run_out',note:'',out:'',busy:false,ctl:null,err:''};
+function askFacts(m){
+  var planned=0,taken=0,last='',i,d,k;
+  for(i=1;i<=7;i++){d=addDays(new Date(),-i);k=dkey(d);
+    dosesFor(k).forEach(function(x){if(x.med.id!==m.id)return;planned++;if(entry(k,x))taken++;});}
+  for(i=0;i<=13&&!last;i++){d=addDays(new Date(),-i);k=dkey(d);
+    var es=dosesFor(k).filter(function(x){return x.med.id===m.id;}).map(function(x){return entry(k,x);}).filter(function(e){return e&&e.at;});
+    if(es.length){var mx=es.reduce(function(a,b){return mins(b.at)>mins(a.at)?b:a;});last=dmy(d.getTime())+' '+mx.at;}
+  }
+  return {planned:planned,taken:taken,last:last};
+}
+function askTemplate(m,topic,f){
+  var t=tr('Сәлеметсіз бе! Мен ')+(S.name||tr('пациент'))+tr('. Дәрі бойынша сұрағым бар.\n\nДәрі: ')+m.name+(m.dose?' '+m.dose:'')+tr(', қабылдау уақыты: ')+m.times.join(', ')+tr('.\nСұрақ тақырыбы: ')+topic[1]+'.\n';
+  if(f.planned)t+=tr('Соңғы 7 күнде ')+f.taken+' / '+f.planned+tr(' рет қабылдадым.')+(f.last?tr(' Соңғы қабылдау: ')+f.last+'.':'')+'\n';
+  if(ask.note.trim())t+=tr('Қосымша: ')+ask.note.trim()+'\n';
+  return t+tr('\nКеңес бере аласыз ба? Өз бетімше дозаны немесе дәріні өзгертпеймін.');
+}
+function askPrompt(m,topic,f){
+  var data={patient:S.name||'',medicine:m.name+(m.dose?' '+m.dose:''),times:m.times,topic:topic[1],last7days:f.planned?(f.taken+'/'+f.planned):'',lastTaken:f.last,userNote:ask.note.trim()};
+  return tr('Сен пациенттің атынан дәрігерге немесе фармацевке жазылатын қысқа хабарды құрастыратын көмекшісің. Тек төмендегі деректерді қолдан, ештеңе ойдан қоспа.\nҚатаң ережелер: кеңес берме, сұраққа өзің жауап берме, диагноз қойма, доза ұсынба. Тек сұрақты нақты және сыпайы етіп қой.\nТілі: қазақша, 4–7 сөйлем, 120 сөзден аспасын. Тек хабар мәтіні (тақырыпсыз, тырнақшасыз, түсініктемесіз).\nХабардың соңында «Өз бетімше дозаны немесе дәріні өзгертпеймін» деген сөйлем болсын.\n\nДеректер (JSON):\n')+JSON.stringify(data);
+}
+function askLinks(){
+  var wa=document.getElementById('askWa'),tg=document.getElementById('askTg'),q=encodeURIComponent(ask.out);
+  if(wa)wa.href='https://wa.me/?text='+q;if(tg)tg.href='https://t.me/share/url?url=%20&text='+q;
+}
+function askHTML(){
+  var h=tr('<div><h1 class="h-title">Дәрі туралы сұрақ</h1><p class="h-sub">AI сұрағыңызды дәрігерге немесе фармацевке жіберуге дайын хабарға айналдырады. AI өзі жауап бермейді.</p></div>');
+  h+='<div class="alert"><span>'+ic('alert',20)+tr('</span><span>Шұғыл жағдайда (кеуде ауруы, тыныс алу қиындығы, есінен тану) 112-ге қоңырау шалыңыз.</span></div>');
+  if(!S.meds.length)return h+'<div class="card empty">'+ic('pill',32)+tr('<h3>Алдымен дәрі қосыңыз</h3><p>Сұрақ нақты дәріге байланысты жазылады.</p><button class="btn" data-act="go" data-v="add">')+ic('cam',18)+tr(' Дәрі қосу</button></div>');
+  if(!S.meds.some(function(m){return m.id===ask.medId;}))ask.medId=S.meds[0].id;
+  h+=tr('<div class="card med-edit"><div class="fld"><label for="askMed">Қай дәрі туралы</label><select class="inp" id="askMed" data-ask="medId">')+S.meds.map(function(m){return '<option value="'+esc(m.id)+'"'+(m.id===ask.medId?' selected':'')+'>'+medLine(m)+'</option>';}).join('')+'</select></div>'+
+   tr('<div class="fld"><label for="askTopic">Сұрақ тақырыбы</label><select class="inp" id="askTopic" data-ask="topic">')+ASK_TOPICS.map(function(t){return '<option value="'+t[0]+'"'+(t[0]===ask.topic?' selected':'')+'>'+esc(t[1])+'</option>';}).join('')+'</select></div>'+
+   tr('<div class="fld"><label for="askNote">Қосымша мәлімет (міндетті емес)</label><input class="inp" id="askNote" data-ask="note" value="')+esc(ask.note)+tr('" placeholder="Мысалы, дәріхана бүгін жабық" autocomplete="off"></div>')+
+   '<button class="btn block" data-act="ask-go"'+(ask.busy?' disabled':'')+tr('>Хабарды дайындау</button></div>');
+  if(ask.busy)h+=tr('<div class="card reading"><div style="display:flex;gap:10px;align-items:center"><div class="spin"></div><b>AI хабарды жазып жатыр</b></div><button class="btn ghost" data-act="ask-stop">Тоқтату</button></div>');
+  if(ask.err)h+='<div class="alert info"><span>'+ic('info',20)+'</span><span>'+esc(ask.err)+'</span></div>';
+  if(ask.out){
+    var q=encodeURIComponent(ask.out);
+    h+=tr('<div class="card med-edit"><div class="fld"><label for="askOut">Дайын хабар (түзетуге болады)</label><textarea class="inp msgbox" id="askOut" data-ask="out">')+esc(ask.out)+'</textarea></div>'+
+     tr('<div class="askrow"><button class="btn" data-act="ask-copy">Көшіру</button><a class="btn ghost" id="askWa" target="_blank" rel="noopener" href="https://wa.me/?text=')+q+'">WhatsApp</a><a class="btn ghost" id="askTg" target="_blank" rel="noopener" href="https://t.me/share/url?url=%20&text='+q+'">Telegram</a></div>'+
+     tr('<p class="note">Хабарды дәрігеріңізге немесе фармацевке өзіңіз жібересіз, DenSau оны жібермейді. Жауапты тек олар береді.</p></div>');
+  }
+  return h;
+}
+async function askGo(){
+  var m=S.meds.filter(function(x){return x.id===ask.medId;})[0];if(!m)return;
+  var topic=ASK_TOPICS.filter(function(t){return t[0]===ask.topic;})[0]||ASK_TOPICS[0];
+  var f=askFacts(m),fallback=askTemplate(m,topic,f);
+  ask.err='';ask.out='';
+  if(sampleFn&&S.consent&&S.consent.ai&&isPrem()){
+    ask.busy=true;ask.ctl=new AbortController();render();
+    try{
+      var r=await sampleFn(askPrompt(m,topic,f),{signal:ask.ctl.signal});
+      var tx=String((r&&r.text)||'').trim();
+      ask.out=tx||fallback;
+    }catch(e){
+      ask.out=fallback;
+      if(!e||e.code!=='cancelled')ask.err=tr('AI қазір қолжетімсіз, дайын үлгі көрсетілді.');else ask.out='';
+    }
+    ask.busy=false;ask.ctl=null;
+  }else{
+    ask.out=fallback;
+    if(!isPrem())ask.err=tr('ИИ-мен жазу Premium жоспарында. Қазір дайын үлгі көрсетілді, оны өзіңіз түзете аласыз.');
+    else if(!(S.consent&&S.consent.ai))ask.err=tr('ИИ-ге жіберуге келісім берілмегендіктен, дайын үлгі көрсетілді. Келісімді мәзірдегі «Келісімдер» бөлімінде қосуға болады.');
+  }
+  if(view==='ask')render();
+}
+
+/* ---------- stock (refill forecast) ---------- */
+function stockOf(m){
+  var st=m.stock;if(!st||!(st.n>0))return null;
+  var per=st.per>0?st.per:1,taken=0,i,k,d,today=new Date();
+  var from=new Date(st.at+'T00:00:00'),days=Math.round((new Date(dkey(today)+'T00:00:00')-from)/86400000);
+  for(i=0;i<=days;i++){d=addDays(from,i);k=dkey(d);m.times.forEach(function(t){if((S.log[k]||{})[m.id+'@'+t])taken++;});}
+  var left=Math.max(0,st.n-taken*per),perDay=m.times.length*per,dl=perDay>0?Math.floor(left/perDay):0;
+  return {left:left,daysLeft:dl,per:per,runOut:addDays(today,dl)};
+}
+function lowStock(){
+  if(!isPrem())return [];
+  var out=[];S.meds.forEach(function(m){var r=stockOf(m);if(r&&r.daysLeft<=5)out.push({m:m,r:r});});
+  return out;
+}
+function stockHTML(){
+  var h=tr('<div><h1 class="h-title">Дәрі қоры</h1><p class="h-sub">Қорапта қанша таблетка бар екенін жазыңыз, DenSau қай күні таусылатынын есептеп, алдын ала еске салады.</p></div>');
+  if(!isPrem())return h+lockCard(tr('Дәрі қоры'),tr('Таусылу болжамы Premium жоспарында.'));
+  if(!S.meds.length)return h+'<div class="card empty">'+ic('pill',32)+tr('<h3>Алдымен дәрі қосыңыз</h3><button class="btn" data-act="go" data-v="add">')+ic('cam',18)+tr(' Дәрі қосу</button></div>');
+  h+='<div class="card med-edit">'+S.meds.map(function(m){
+    var r=stockOf(m),st=m.stock||{};
+    var info=r?'<p class="note'+(r.daysLeft<=5?' warn':'')+tr('">Қалды шамамен ')+(r.left%1?fmt(r.left,1):Math.round(r.left))+tr(' дана, ')+r.daysLeft+tr(' күнге жетеді (таусылу күні: ')+dmy(r.runOut.getTime())+').</p>':tr('<p class="note">Қор жазылмаған.</p>');
+    return '<div class="stk"><b>'+medLine(m)+'</b><div class="t2"><div class="fld"><label for="stN_'+esc(m.id)+tr('">Қорапта (дана)</label><input class="inp" id="stN_')+esc(m.id)+'" type="number" inputmode="decimal" min="0" value="'+(st.n||'')+'" placeholder="30"></div><div class="fld"><label for="stP_'+esc(m.id)+tr('">1 дозада (дана)</label><input class="inp" id="stP_')+esc(m.id)+'" type="number" inputmode="decimal" min="0.5" step="0.5" value="'+(st.per||1)+'"></div></div>'+info+'</div>';
+  }).join('')+tr('<button class="btn block" data-act="save-stock">Сақтау</button></div>');
+  h+=tr('<p class="note pad">Есептеу сіз белгілеген «Іштім» белгілеріне негізделген және шамалы. DenSau дәріні қашан алу керегін ұсынбайды, тек таусылатын күнді көрсетеді.</p>');
+  return h;
+}
+
+/* ---------- visit prep ---------- */
+var prep={q:'',out:'',busy:false,ctl:null,err:''};
+function prepFacts(){
+  var meds=[],i,d,k,tot={p:0,t:0};
+  S.meds.forEach(function(m){
+    var p=0,t=0;
+    for(i=1;i<=30;i++){d=addDays(new Date(),-i);k=dkey(d);if(m.added>k)continue;m.times.forEach(function(tm){p++;if((S.log[k]||{})[m.id+'@'+tm])t++;});}
+    if(p)meds.push({name:m.name+(m.dose?' '+m.dose:''),planned:p,taken:t,missed:p-t});
+    tot.p+=p;tot.t+=t;
+  });
+  var since=Date.now()-30*86400000;
+  function vit(type){
+    var v=vitalsOf(type).filter(function(x){return x.t>=since;});if(!v.length)return null;
+    var l=v[v.length-1];
+    function mm(key){var a=v.map(function(x){return +x[key];});return [Math.min.apply(null,a),Math.max.apply(null,a)];}
+    return {count:v.length,last:type==='bp'?l.a+'/'+l.b:String(l.a),lastDate:dmy(l.t),a:mm('a'),b:type==='bp'?mm('b'):null};
+  }
+  return {meds:meds,total:tot,bp:vit('bp'),glu:vit('glu')};
+}
+function prepTemplate(f){
+  var t=tr('Қабылдауға дайындық. ')+(S.name||tr('Пациент'))+', '+dmy(Date.now())+tr('.\n\nДәрілер (соңғы 30 күн):\n');
+  if(!f.meds.length)t+=tr('- Қабылдау деректері жоқ.\n');
+  f.meds.forEach(function(m){t+='- '+m.name+': '+m.taken+' / '+m.planned+tr(' рет ішілді (')+Math.round(m.taken/m.planned*100)+tr('%), өткізілген ')+m.missed+'.\n';});
+  if(f.bp||f.glu){
+    t+=tr('\nӨлшемдер (соңғы 30 күн):\n');
+    if(f.bp)t+=tr('- Қан қысымы: ')+f.bp.count+tr(' өлшем, соңғысы ')+f.bp.last+' ('+f.bp.lastDate+tr('); жоғарғысы ')+f.bp.a[0]+'–'+f.bp.a[1]+tr(', төменгісі ')+f.bp.b[0]+'–'+f.bp.b[1]+'.\n';
+    if(f.glu)t+=tr('- Қант: ')+f.glu.count+tr(' өлшем, соңғысы ')+fmt(f.glu.last,1)+tr(' ммоль/л (')+f.glu.lastDate+'); '+fmt(f.glu.a[0],1)+'–'+fmt(f.glu.a[1],1)+'.\n';
+  }
+  var qs=prep.q.split('\n').map(function(x){return x.trim();}).filter(Boolean);
+  t+=tr('\nДәрігерге сұрақтарым:\n')+(qs.length?qs.map(function(x){return '- '+x;}).join('\n'):'- ')+'\n';
+  return t;
+}
+function prepPrompt(f){
+  return tr('Сен пациентке дәрігер қабылдауына дайындалуға көмектесесің. Төмендегі деректерден қысқа, реттелген қазақша конспект жаса.\nҚатаң ережелер: тек берілген деректі қолдан, ештеңе ойдан қоспа. Диагноз қойма, кеңес берме, мәндерді «жоғары», «қалыпты», «жақсы», «жаман» деп бағаламa, тек сандар мен фактіні жаз.\nҚұрылымы: 1) Дәрілер мен қабылдау, 2) Өлшемдер (болса), 3) Дәрігерге сұрақтар (пациент жазғанды анық, қысқа етіп қайта жаз; жоқ болса бос қалдыр).\nКөлемі 180 сөзден аспасын. Тек мәтін, тақырыбы мен түсініктемесіз.\n\nДеректер (JSON):\n')+JSON.stringify({patient:S.name||'',date:dmy(Date.now()),last30days:f,patientQuestions:prep.q.trim()});
+}
+function prepHTML(){
+  var h=tr('<div><h1 class="h-title">Қабылдауға дайындық</h1><p class="h-sub">Соңғы 30 күндегі қабылдау мен өлшемдерден дәрігерге көрсететін қысқа конспект жасайды.</p></div>');
+  if(!isPrem())return h+lockCard(tr('Қабылдауға дайындық'),tr('ИИ-конспект Premium жоспарында.'));
+  h+=tr('<div class="card med-edit"><div class="fld"><label for="prepQ">Дәрігерге сұрақтарыңыз (әр жолға біреуден, міндетті емес)</label><textarea class="inp msgbox" id="prepQ" data-prep="q" placeholder="Мысалы, дәрінің дозасы өзгере ме?">')+esc(prep.q)+'</textarea></div><button class="btn block" data-act="prep-go"'+(prep.busy?' disabled':'')+tr('>Конспект жасау</button></div>');
+  if(prep.busy)h+=tr('<div class="card reading"><div style="display:flex;gap:10px;align-items:center"><div class="spin"></div><b>AI конспект жазып жатыр</b></div><button class="btn ghost" data-act="prep-stop">Тоқтату</button></div>');
+  if(prep.err)h+='<div class="alert info"><span>'+ic('info',20)+'</span><span>'+esc(prep.err)+'</span></div>';
+  if(prep.out)h+=tr('<div class="card med-edit"><div class="fld"><label for="prepOut">Дайын конспект (түзетуге болады)</label><textarea class="inp msgbox tall" id="prepOut" data-prep="out">')+esc(prep.out)+tr('</textarea></div><button class="btn block" data-act="prep-copy">Көшіру</button><p class="note">Конспект тек сіздің «Іштім» және өлшем жазбаларыңызға негізделген. Ол диагноз емес, дәрігер шешім қабылдайды.</p></div>');
+  return h;
+}
+async function prepGo(){
+  var f=prepFacts(),fb=prepTemplate(f);
+  prep.err='';prep.out='';
+  if(sampleFn&&S.consent&&S.consent.ai&&isPrem()){
+    prep.busy=true;prep.ctl=new AbortController();render();
+    try{
+      var r=await sampleFn(prepPrompt(f),{signal:prep.ctl.signal});
+      prep.out=String((r&&r.text)||'').trim()||fb;
+    }catch(e){
+      prep.out=fb;
+      if(!e||e.code!=='cancelled')prep.err=tr('AI қазір қолжетімсіз, дайын үлгі көрсетілді.');else prep.out='';
+    }
+    prep.busy=false;prep.ctl=null;
+  }else{
+    prep.out=fb;
+    if(!(S.consent&&S.consent.ai))prep.err=tr('ИИ-ге жіберуге келісім берілмегендіктен, конспект құрылғыда дайын үлгімен жасалды. Келісімді «Келісімдер» бөлімінде қосуға болады.');
+  }
+  if(view==='prep')render();
+}
+
+/* ---------- add view ---------- */
+var CHOICES=null;
+function timeChips(it,i){
+  return '<div class="times">'+it.times.map(function(t){return '<button class="tchip" data-act="rm-time" data-i="'+i+'" data-t="'+esc(t)+'" aria-label="'+esc(t)+tr(' уақытын өшіру">')+esc(t)+ic('x',14)+'</button>';}).join('')+
+  '<div class="tadd"><input class="inp" type="time" id="tm'+i+tr('" aria-label="Қабылдау уақытын қосу"><button class="btn ghost sm" data-act="add-time" data-i="')+i+'">'+ic('plus',16)+tr(' Қосу</button></div></div>');
+}
+function itemCard(it,i){
+  var badge=it.sample?(it.conf>=0.8?tr('<span class="badge man">Үлгі нәтиже</span>'):tr('<span class="badge warn">Тексеріңіз · үлгі</span>')):it.manual?tr('<span class="badge man">Қолмен енгізілді</span>'):
+    (it.conf!=null&&it.conf>=0.8)?tr('<span class="badge ok">AI анық оқыды · ')+Math.round(it.conf*100)+'%</span>':
+    tr('<span class="badge warn">Тексеріңіз · AI бағасы ')+Math.round((it.conf||0)*100)+'%</span>';
+  return '<div class="card med-edit"><div class="head"><label class="inc"><input type="checkbox" data-f="include" data-i="'+i+'"'+(it.include?' checked':'')+tr('> Қосу</label>')+badge+'</div>'+
+  '<div class="two"><div class="fld"><label for="nm'+i+tr('">Дәрі атауы</label><input class="inp" id="nm')+i+'" data-f="name" data-i="'+i+'" value="'+esc(it.name)+'" autocomplete="off"></div>'+
+  '<div class="fld"><label for="ds'+i+tr('">Доза</label><input class="inp" id="ds')+i+'" data-f="dose" data-i="'+i+'" value="'+esc(it.dose)+'" autocomplete="off"></div></div>'+
+  tr('<div class="fld"><span class="lbl">Қабылдау уақыты</span>')+timeChips(it,i)+'</div>'+
+  '<div class="fld"><label for="nt'+i+tr('">Ескертпе</label><input class="inp" id="nt')+i+'" data-f="note" data-i="'+i+'" value="'+esc(it.note)+tr('" placeholder="мысалы, тамақтан кейін" autocomplete="off"></div></div>');
+}
+var SAMPLE_RX='data:image/webp;base64,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';
+function sampleItems(){return [
+  {name:tr('Азитромицин'),dose:'0,25 №6',note:tr('Фотода: 2 капсуладан күніне 1 рет, 3 күн.'),times:['08:00'],conf:0.9,include:true,manual:false,sample:true},
+  {name:tr('Лазолван сироп'),dose:tr('1 десерттік қасық'),note:tr('Курс 7 күн.'),times:['08:00','14:00','20:00'],conf:0.9,include:true,manual:false,sample:true},
+  {name:tr('Йодантипирин'),dose:'',note:tr('Рецептте «по схеме» деп жазылған, дозасы жоқ.'),times:['08:00'],conf:0.55,include:true,manual:false,sample:true}];}
+function addHTML(){
+  var h=tr('<div><h1 class="h-title">Жаңа дәрі қосу</h1><p class="h-sub">Рецепт, дәрі қорабы немесе аурухананың выпискасын түсіріңіз, AI дәрілерді өзі таниды.</p></div>');
+  if(add.phase==='reading'){
+    h+='<div class="card reading">'+(add.preview?'<div class="scanline"><img src="'+add.preview+tr('" alt="Таңдалған фото"></div>'):'')+
+    tr('<div style="display:flex;gap:10px;align-items:center"><div class="spin"></div><b>AI құжатты оқып жатыр</b></div><span class="note">Бұл 10–30 секунд алуы мүмкін.</span><button class="btn ghost" data-act="stop">Тоқтату</button></div>');
+    return h;
+  }
+  if(add.phase==='review'){
+    var ok=add.items.some(function(it){return it.include&&it.name.trim()&&it.times.length;});
+    if(add.preview)h+='<img class="preview" src="'+add.preview+tr('" alt="Таңдалған фото">');
+    if(add.items.some(function(it){return it.sample;}))h+='<div class="alert info"><span>'+ic('info',20)+tr('</span><span>Бұл үлгі рецепттің алдын ала дайындалған нәтижесі, нақты ИИ оқуы емес. Нақты фотодан тану тек қолжетімді жерде істейді.</span></div>');
+    h+='<div class="alert"><span>'+ic('alert',20)+tr('</span><span>AI қателесуі мүмкін. Атауы мен дозасын фотомен салыстырып, қажет болса түзетіңіз.</span></div>');
+    h+=add.items.map(itemCard).join('');
+    h+='<button class="btn ghost block" data-act="more">'+ic('plus',18)+tr(' Тағы дәрі қосу</button>');
+    h+='<label class="confirm"><input type="checkbox" data-f="confirmed"'+(add.confirmed?' checked':'')+tr('><span>Дәрі атауы мен дозасын рецептпен салыстырдым және растаймын</span></label>');
+    h+='<button class="btn block" data-act="save-add"'+((ok&&add.confirmed)?'':' disabled')+'>'+ic('check',18)+tr(' Кестеге қосу</button><button class="link" data-act="cancel-add" style="align-self:center">Бас тарту</button>');
+    return h;
+  }
+  if(add.err)h+='<div class="alert"><span>'+ic('alert',20)+'</span><span>'+esc(add.err)+'</span></div>';
+  if(add.msg)h+='<div class="alert info"><span>'+ic('info',20)+'</span><span>'+esc(add.msg)+'</span></div>';
+  if(!isPrem()&&(S.scans||0)>=FREE_SCANS){
+    h+=lockCard(tr('Тегін фото тану біткен'),tr('Тегін жоспарда ')+FREE_SCANS+tr(' фото. Одан кейін дәріні қолмен қосуға болады немесе Premium қосыңыз.'));
+  }else if(!aiProbed){
+  }else if(!(sampleFn&&imgLimits&&imgLimits.images)){
+    h+='<div class="alert info"><span>'+ic('info',20)+tr('</span><span>Фотодан тану бұл көріністе қолжетімсіз. Дәріні қолмен қосуға болады.</span></div>');
+  }else if(!(S.consent&&S.consent.ai)){
+    h+='<div class="alert info"><span>'+ic('info',20)+tr('</span><span>Фотодан тану үшін суретті ИИ қызметіне (Google Gemini, шетелде өңделуі мүмкін; тегін нұсқада Google суретті өз қызметін жақсартуға қолдануы мүмкін, сондықтан демода жеке рецептіңізді емес, дәрі қорабын немесе үлгіні түсіріңіз) жіберуге келісім керек. Келісім бермесеңіз, дәріні қолмен қосасыз.</span></div><button class="btn block" data-act="give-ai">Келісім беру</button>');
+  }else{
+    h+='<label class="scan"><input type="file" id="photo" accept="'+esc(imgLimits.images.mediaTypes.join(','))+tr('" aria-label="Фото таңдау"><div class="big">')+ic('cam',28)+tr('</div><b>Фото түсіру</b><span>Рецепт, қорап, выписка немесе скриншот. Галереядан да болады</span></label>');
+  }
+  h+='<div class="card" style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;gap:12px;align-items:center"><img src="'+SAMPLE_RX+tr('" alt="" style="width:88px;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff"><div><b>Үлгі рецепт (жасанды)</b><p class="note" style="margin:4px 0 0">Нәтиже алдын ала дайындалған, нақты ИИ оқуы емес.</p></div></div><button class="btn ghost block" data-act="sample-rx">Үлгі рецептпен көру</button></div>');
+  h+=tr('<div class="or">НЕМЕСЕ ҚОЛМЕН</div><button class="btn ghost block" data-act="manual">Дәріні қолмен қосу</button>');
+  h+=tr('<p class="note pad">Фото тек оқу үшін жіберіледі. DenSau дозаны өзгертпейді және кеңес бермейді, тек рецептте жазылғанды кестеге айналдырады.</p>');
+  return h;
+}
+
+/* ---------- AI recognition ---------- */
+var PROMPT=tr('Сен дәрі рецептінің, дәрі қорабының, аурухананың выпискасының (шығару құжаты) немесе электронды рецепт скриншотының фотосын мәтінге айналдыратын көмекшісің. Тек фотода көрінетінді жаз, ештеңе ойдан қоспа. Диагноз қойма, ем тағайындама, дозаны өзгертпе.\n\n')+
+tr('Тек бір JSON объект қайтар:\n{"readable":true,"medicines":[{"name":"дәрі атауы","dose":"500 мг","frequency":"фотода жазылған жиілік немесе бос жол","times":["08:00"],"note":"қысқа ескертпе қазақша немесе бос жол","confidence":0.9}],"message":"оқылмаса, себебін қазақша бір сөйлеммен жаз, әйтпесе бос жол"}\n\n')+
+tr('Ережелер:\n- times: фотода нақты уақыт жазылса, соны ал. Әйтпесе жиілік бойынша: 1 рет күніне ["08:00"], 2 рет ["08:00","20:00"], 3 рет ["08:00","14:00","20:00"]. Жиілік көрінбесе ["08:00"].\n- confidence: атауы мен дозасы қаншалықты анық оқылғанын 0-ден 1-ге дейін бағала. Бұлыңғыр немесе болжам болса 0.6-дан төмен қой.\n- Дозасы көрінбесе dose бос жол болсын.\n- Бір фотода бірнеше дәрі болса, бәрін medicines тізіміне қос. Ауру атауын, диагнозды және басқа ақпаратты жазба.\n- Фотода дәрі табылмаса немесе мәтін оқылмаса: {"readable":false,"medicines":[],"message":"себебі"}.');
+
+function errCopy(c){
+  return {
+    not_granted:tr('ИИ-ге рұқсат берілмеді. Дәріні қолмен қосыңыз.'),
+    sampling_disabled:tr('Бұл аккаунтта AI қолжетімсіз. Дәріні қолмен қосыңыз.'),
+    rate_limited:tr('Сұраныс тым көп болды. Біраз күтіп, қайта көріңіз.'),
+    image_rejected:tr('Фото оқылмады. Басқа сурет таңдаңыз.'),
+    images_unavailable:tr('Фотодан тану қолжетімсіз. Дәріні қолмен қосыңыз.'),
+    refused:tr('AI бұл фотоны өңдей алмады. Басқа сурет таңдаңыз.'),
+    session_expired:tr('Сессия аяқталды. Бетті қайта ашыңыз.')
+  }[c]||tr('AI жауабы толық болмады. Қайта көріңіз немесе дәріні қолмен қосыңыз.');
+}
+function cleanTimes(a){
+  var out=[];(Array.isArray(a)?a:[]).forEach(function(t){
+    var m=/^(\d{1,2}):(\d{2})$/.exec(String(t).trim());
+    if(m&&+m[1]<24&&+m[2]<60){var v=pad(+m[1])+':'+m[2];if(out.indexOf(v)<0)out.push(v);}
+  });
+  return out.sort();
+}
+async function readPhoto(file){
+  if(!file||!sampleFn||!(S.consent&&S.consent.ai))return;
+  if(!isPrem()&&(S.scans||0)>=FREE_SCANS)return;
+  if(add.preview){try{URL.revokeObjectURL(add.preview);}catch(e){}}
+  try{add.preview=URL.createObjectURL(file);}catch(e){add.preview=null;}
+  add.phase='reading';add.err='';add.msg='';add.ctl=new AbortController();render();
+  try{
+    var r=await sampleFn.json(PROMPT,{images:[file],signal:add.ctl.signal});
+    var list=(r&&Array.isArray(r.medicines)?r.medicines:[]).map(function(x){
+      var name=String((x&&x.name)||'').trim();
+      var conf=typeof x.confidence==='number'?Math.max(0,Math.min(1,x.confidence)):0.5;
+      var times=cleanTimes(x.times);
+      return {name:name,dose:String(x.dose||'').trim(),note:String(x.note||'').trim(),times:times.length?times:['08:00'],conf:conf,include:!!name,manual:false};
+    }).filter(function(x){return x.name;});
+    if(!r||r.readable===false||!list.length){
+      add.phase='idle';add.msg=(r&&r.message)||tr('Фотодан дәрі табылмады. Анығырақ сурет түсіріп көріңіз немесе қолмен қосыңыз.');
+    }else{add.items=list;add.phase='review';add.confirmed=false;if(!isPrem()){S.scans=(S.scans||0)+1;save();}}
+  }catch(e){
+    add.phase='idle';
+    if(!e||e.code!=='cancelled')add.err=errCopy(e&&e.code);
+  }
+  add.ctl=null;
+  if(view==='add')render();
+}
+
+/* ---------- render + events ---------- */
+function render(){
+  var onb=needsConsent();
+  try{document.body.classList.toggle('onb',onb);}catch(e){}
+  if(onb){
+    menu=null;$('#drawer').innerHTML='';$('#app').innerHTML=onboardHTML();$('#tabs').innerHTML='';
+    var modal=ob.step==='terms'||ob.step==='privacy'||ob.step==='ai';
+    try{document.body.style.overflow=modal?'hidden':'';}catch(e){}
+    if(modal)setTimeout(function(){cmCheck(document.getElementById('cmBody'));},0);
+    return;
+  }
+  renderMenu();$('#app').innerHTML=head()+(view==='add'?addHTML():view==='log'?logHTML():view==='ask'?askHTML():view==='prep'?prepHTML():view==='stock'?stockHTML():view==='rel'?relHTML():homeHTML());
+  var tabs=[['home','home',tr('Басты')],['add','cam',tr('Қосу')],['log','chart',tr('Журнал')],['rel','users',tr('Туыс')]];
+  $('#tabs').innerHTML=tabs.map(function(t){return '<button class="tab'+(t[0]==='add'?' add':'')+'" data-act="go" data-v="'+t[0]+'"'+(view===t[0]?' aria-current="page"':'')+'>'+ic(t[1],t[0]==='add'?30:22)+'<span>'+t[2]+'</span></button>';}).join('');
+}
+function go(v){
+  if(v==='add'&&view!=='add'&&add.phase!=='reading'){add.phase='idle';add.err='';add.msg='';}
+  view=v;render();window.scrollTo(0,0);
+}
+var tt;
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2200);}
+
+function take(key){
+  var k=dkey(new Date()),n=new Date();
+  S.log[k]=S.log[k]||{};S.log[k][key]={at:pad(n.getHours())+':'+pad(n.getMinutes())};
+  delete snooze[key];save();closeRemind();
+  if(view!=='add')render();
+  toast(tr('Іштім деп белгіленді'));
+}
+function untake(key){var k=dkey(new Date());if(S.log[k])delete S.log[k][key];save();if(view!=='add')render();}
+
+function showRemind(dose){
+  $('#ov').innerHTML=tr('<div class="notif" role="alertdialog" aria-label="Еске салғыш"><div class="nh"><div class="mark">D</div>DENSAU · ҚАЗІР</div><h3>Дәріңізді ішу уақыты келді!</h3><p>')+medLine(dose.med)+' · '+esc(dose.time)+(dose.med.note?', '+esc(dose.med.note):'')+'</p><div class="acts"><button class="btn" data-act="take" data-key="'+esc(dose.key)+tr('">Іштім</button><button class="btn ghost" data-act="snooze" data-key="')+esc(dose.key)+tr('">Кейінірек</button></div></div>');
+}
+function closeRemind(){$('#ov').innerHTML='';}
+function tick(){
+  if(needsConsent()||$('#ov').firstChild)return;
+  var k=dkey(new Date()),n=nowMin();
+  var d=dosesFor(k).filter(function(x){
+    if(entry(k,x))return false;
+    var diff=n-mins(x.time);
+    return diff>=0&&diff<=45&&(snooze[x.key]||0)<=Date.now();
+  })[0];
+  if(d){snooze[d.key]=Date.now()+10*60000;showRemind(d);}
+}
+
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-act]');if(!b)return;
+  var a=b.dataset.act,i=+b.dataset.i;
+  if(a==='go')go(b.dataset.v);
+  else if(a==='lang')setLang(b.dataset.l);
+  else if(a==='take')take(b.dataset.key);
+  else if(a==='untake')untake(b.dataset.key);
+  else if(a==='snooze'){snooze[b.dataset.key]=Date.now()+10*60000;closeRemind();toast(tr('10 минуттан кейін қайта еске саламыз'));}
+  else if(a==='demo-remind'){
+    var k=dkey(new Date()),d=dosesFor(k).filter(function(x){return !entry(k,x);})[0]||dosesFor(k)[0];
+    if(d)showRemind(d);
+  }
+  else if(a==='clear-demo'){S={demo:false,name:S.name,meds:[],log:{},vitals:[],oraza:{on:false,sahur:'04:30',iftar:'18:00'},consent:S.consent,profile:S.profile,relative:S.relative,session:S.session,plan:S.plan,scans:S.scans};save();menu=null;render();toast(tr('Үлгі дерек тазаланды'));}
+  else if(a==='stop'){if(add.ctl)add.ctl.abort();}
+  else if(a==='logtype'){logType=b.dataset.v;render();}
+  else if(a==='wk-prev'){weekOff--;render();}
+  else if(a==='wk-next'){if(weekOff<0){weekOff++;render();}}
+  else if(a==='log-add'){
+    var vnew;
+    if(logType==='bp'){
+      var sy=numOf('vSys'),di=numOf('vDia'),pu=numOf('vPul');
+      if(!(sy>=50&&sy<=300&&di>=30&&di<=200&&sy>di)){toast(tr('Қысым мәнін тексеріңіз: жоғарғы төменгіден үлкен болуы керек'));return;}
+      vnew={id:'v'+uid(),t:Date.now(),type:'bp',a:Math.round(sy),b:Math.round(di),c:(pu>=30&&pu<=220)?Math.round(pu):null};
+    }else{
+      var gl=numOf('vGlu'),cx=document.getElementById('vCtx');
+      if(!(gl>=1&&gl<=40)){toast(tr('Қант мәнін тексеріңіз (1–40 ммоль/л)'));return;}
+      vnew={id:'v'+uid(),t:Date.now(),type:'glu',a:Math.round(gl*10)/10,ctx:cx?cx.value:''};
+    }
+    S.vitals.push(vnew);save();render();toast(tr('Жазылды'));
+  }
+  else if(a==='log-del'){S.vitals=S.vitals.filter(function(x){return x.id!==b.dataset.id;});save();render();}
+  else if(a==='menu-open'){menu=b.dataset.s||'main';render();var mc=document.getElementById('menuClose');if(mc)mc.focus();}
+  else if(a==='menu-go'){menu=b.dataset.s;render();}
+  else if(a==='menu-close'){menu=null;withdrawAsk=false;render();}
+  else if(a==='noop'){}
+  else if(a==='ob-start'){ob.ai=false;obFinish();}
+  else if(a==='ob-login-page'){ob.step='login';ob.msg='';render();window.scrollTo(0,0);}
+  else if(a==='ob-do-login'){if(!obIssue('login'))doLogin();}
+  else if(a==='ob-back'){var bk={acc:'welcome',about:'acc',family:'about',login:'welcome'};ob.step=bk[ob.step]||'welcome';ob.msg='';render();window.scrollTo(0,0);}
+  else if(a==='ob-next'){
+    if(obIssue(ob.step))return;
+    var nx={acc:'about',about:'family',family:'terms'};ob.step=nx[ob.step];render();window.scrollTo(0,0);
+  }
+  else if(a==='ob-skip-rel'){ob.relName='';ob.relRel='';ob.relPhone='';ob.step='terms';render();}
+  else if(a==='ob-retry'){ob.step='terms';render();}
+  else if(a==='cm-no'){
+    if(ob.step==='ai'){ob.ai=false;obFinish();}
+    else{ob.step='declined';render();window.scrollTo(0,0);}
+  }
+  else if(a==='cm-yes'){
+    if(!ob.done[ob.step])return;
+    if(ob.step==='terms'){ob.step='privacy';render();}
+    else if(ob.step==='privacy'){ob.step='ai';render();}
+    else{ob.ai=true;obFinish();}
+  }
+  else if(a==='logout'){S.session=false;save();menu=null;ob=newOb();view='home';render();window.scrollTo(0,0);}
+  else if(a==='give-ai'){S.consent.ai=Date.now();save();render();toast(tr('Келісім берілді'));}
+  else if(a==='withdraw'){
+    if(!withdrawAsk){withdrawAsk=true;render();}
+    else{S={demo:false,name:'',meds:[],log:{},vitals:[],oraza:{on:false,sahur:'04:30',iftar:'18:00'},consent:null};save();withdrawAsk=false;menu=null;ob=newOb();weekOff=0;view='home';render();window.scrollTo(0,0);}
+  }
+  else if(a==='menu-ask'){menu=null;view='ask';render();window.scrollTo(0,0);}
+  else if(a==='menu-prep'){menu=null;view='prep';render();window.scrollTo(0,0);}
+  else if(a==='menu-stock'){menu=null;view='stock';render();window.scrollTo(0,0);}
+  else if(a==='prep-go'){prepGo();}
+  else if(a==='prep-stop'){if(prep.ctl)prep.ctl.abort();}
+  else if(a==='prep-copy'){
+    var pt=document.getElementById('prepOut'),ptx=pt?pt.value:prep.out;
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(ptx):Promise.reject()).then(function(){toast(tr('Көшірілді'));}).catch(function(){if(pt){pt.focus();pt.select();}toast(tr('Мәтін таңдалды, көшіріңіз'));});
+  }
+  else if(a==='save-stock'){
+    S.meds.forEach(function(m){
+      var n=document.getElementById('stN_'+m.id),p=document.getElementById('stP_'+m.id);if(!n)return;
+      var nv=parseFloat(String(n.value).replace(',','.')),pv=parseFloat(String(p.value).replace(',','.'));
+      if(nv>0)m.stock={n:nv,per:pv>0?pv:1,at:dkey(new Date())};else delete m.stock;
+    });
+    save();render();toast(tr('Қор сақталды'));
+  }
+  else if(a==='ask-go'){askGo();}
+  else if(a==='ask-stop'){if(ask.ctl)ask.ctl.abort();}
+  else if(a==='ask-copy'){
+    var ta=document.getElementById('askOut'),txt=ta?ta.value:ask.out;
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast(tr('Көшірілді'));}).catch(function(){if(ta){ta.focus();ta.select();}toast(tr('Мәтін таңдалды, көшіріңіз'));});
+  }
+  else if(a==='save-settings'){
+    var g=function(id){var e=document.getElementById(id);return e?e.value.trim():'';},er=document.getElementById('sErr'),pn2=g('sName'),rn=g('sRelName'),rp=g('sRelPhone'),msg='';
+    if(!pn2)msg=tr('Атыңызды жазыңыз.');else if(rn&&!normPhone(rp))msg=tr('Туыстың телефонын толық жазыңыз.');else if(rn&&!g('sRelRel'))msg=tr('Туыс кім екенін таңдаңыз.');
+    if(msg){if(er)er.textContent=msg;return;}
+    S.name=pn2;
+    S.relative=rn?{name:rn,rel:g('sRelRel'),phone:normPhone(rp)}:null;
+    save();menu='main';render();toast(tr('Сақталды'));
+  }
+  else if(a==='go-sub'){menu='sub';subAsk=false;render();}
+  else if(a==='sub-ask'){subAsk=true;pay={method:'',busy:false};render();}
+  else if(a==='sub-cancel'){subAsk=false;pay={method:'',busy:false};render();}
+  else if(a==='pay-method'){if(!pay.busy){pay.method=b.dataset.m;render();}}
+  else if(a==='sub-pay'){
+    if(!pay.method||pay.busy)return;
+    pay.busy=true;render();
+    setTimeout(function(){S.plan={tier:'premium',since:Date.now(),method:pay.method};subAsk=false;pay={method:'',busy:false};save();render();toast(tr('Төлем сәтті (демо). Premium қосылды'));},1600);
+  }
+  else if(a==='sub-off'){S.plan={tier:'free'};save();render();toast(tr('Жазылым тоқтатылды'));}
+  else if(a==='rel-add'){menu='settings';render();}
+  else if(a==='save-name'){var pn=document.getElementById('pName');S.name=(pn&&pn.value.trim())||S.name||tr('Достым');save();menu='main';render();toast(tr('Сақталды'));}
+  else if(a==='oraza-close'){menu='main';render();}
+  else if(a==='oraza-off'){S.oraza.on=false;orazaOpen=false;save();render();toast(tr('Ораза режимі өшірілді'));}
+  else if(a==='oraza-on'){
+    if(!isPrem()){menu='sub';render();return;}
+    var sa=document.getElementById('oSahur'),ift=document.getElementById('oIftar');
+    if(!sa||!ift||!sa.value||!ift.value||mins(sa.value)>=mins(ift.value)){toast(tr('Сәрі уақыты ауызашардан ерте болуы керек'));return;}
+    S.oraza={on:true,sahur:sa.value,iftar:ift.value};menu=null;save();render();toast(tr('Ораза режимі қосылды'));
+  }
+  else if(a==='sample-rx'){add.items=sampleItems();add.preview=SAMPLE_RX;add.phase='review';add.confirmed=false;add.err='';add.msg='';render();window.scrollTo(0,0);}
+  else if(a==='manual'){add.items=[{name:'',dose:'',note:'',times:['08:00'],conf:null,include:true,manual:true}];add.phase='review';add.confirmed=false;add.preview=null;add.err='';add.msg='';render();}
+  else if(a==='more'){add.items.push({name:'',dose:'',note:'',times:['08:00'],conf:null,include:true,manual:true});render();}
+  else if(a==='cancel-add'){add.phase='idle';add.items=[];add.preview=null;render();}
+  else if(a==='rm-time'){var it=add.items[i];it.times=it.times.filter(function(t){return t!==b.dataset.t;});render();}
+  else if(a==='add-time'){
+    var inp=document.getElementById('tm'+i),v=cleanTimes([inp&&inp.value]);
+    if(v.length){var it2=add.items[i];if(it2.times.indexOf(v[0])<0){it2.times.push(v[0]);it2.times.sort();}render();}
+    else toast(tr('Уақытты таңдаңыз'));
+  }
+  else if(a==='save-add'){
+    var today=dkey(new Date()),cnt=0;
+    add.items.forEach(function(it){
+      if(!it.include||!it.name.trim()||!it.times.length)return;
+      S.meds.push({id:'u'+uid(),name:it.name.trim(),dose:it.dose.trim(),times:it.times.slice(),note:it.note.trim(),added:today});cnt++;
+    });
+    if(cnt){save();add.phase='idle';add.items=[];add.preview=null;view='home';render();window.scrollTo(0,0);toast(cnt+tr(' дәрі кестеге қосылды'));}
+  }
+});
+document.addEventListener('input',function(e){
+  var tg=e.target,ds=tg.dataset||{};
+  if(ds.ob){if(tg.type==='checkbox')return;ob[ds.ob]=tg.value;obUpd();var hh=document.getElementById('obHint');if(hh)hh.textContent='';return;}
+  if(ds.ask){ask[ds.ask]=tg.value;if(ds.ask==='out')askLinks();return;}
+  if(ds.prep){prep[ds.prep]=tg.value;return;}
+  var f=e.target.dataset&&e.target.dataset.f;if(!f||f==='include'||f==='confirmed')return;
+  var it=add.items[+e.target.dataset.i];if(it)it[f]=e.target.value;
+  var btn=document.querySelector('[data-act="save-add"]');
+  if(btn){var ok=add.items.some(function(x){return x.include&&x.name.trim()&&x.times.length;});btn.disabled=!(ok&&add.confirmed);}
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='photo'){var f=t.files&&t.files[0];if(f)readPhoto(f);return;}
+  if(t.id==='orOk'){var gb=document.getElementById('orGo');if(gb)gb.disabled=!t.checked;return;}
+  if(t.dataset&&t.dataset.bd&&t.id.indexOf('ob')===0){var was=ageOf(ob.birth)<18&&ageOf(ob.birth)>=0;ob.bd[t.dataset.bd]=t.value;ob.birth=bdCompose(ob.bd);var now=ageOf(ob.birth)<18&&ageOf(ob.birth)>=0;if(was!==now)render();else obUpd();return;}
+  if(t.dataset&&t.dataset.ob){if(t.type==='checkbox'){ob[t.dataset.ob]=t.checked;render();}else{ob[t.dataset.ob]=t.value;if(t.dataset.ob==='birth')render();else obUpd();}return;}
+  if(t.dataset&&t.dataset.ask){ask[t.dataset.ask]=t.value;return;}
+  if(t.id==='aiConsent'){S.consent.ai=t.checked?Date.now():null;save();toast(t.checked?tr('ИИ-ге жіберуге келісім берілді'):tr('ИИ-ге жіберуге келісім қайтарылды'));render();return;}
+  var f2=t.dataset&&t.dataset.f;
+  if(f2==='include'){add.items[+t.dataset.i].include=t.checked;render();}
+  else if(f2==='confirmed'){add.confirmed=t.checked;render();}
+});
+
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu){menu=null;render();}});
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.id==='cmBody')cmCheck(t);},true);
+render();
+setInterval(tick,20000);setTimeout(tick,1500);
+
+/* ---------- own server (Netlify function) for sites outside claude.ai ---------- */
+var API_URL='/.netlify/functions/read-rx';
+function fileToJpegB64(file){return new Promise(function(res,rej){
+  var url=URL.createObjectURL(file),im=new Image();
+  im.onload=function(){try{
+    var mx=1600,sc=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(im.width*sc));c.height=Math.max(1,Math.round(im.height*sc));
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    c.toBlob(function(b){URL.revokeObjectURL(url);if(!b){rej(new Error('blob'));return;}
+      var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]);};r.onerror=rej;r.readAsDataURL(b);},'image/jpeg',0.85);
+  }catch(e){rej(e);}};
+  im.onerror=function(){try{URL.revokeObjectURL(url);}catch(e){}rej(new Error('img'));};
+  im.src=url;});}
+function serverSample(){
+  var f=async function(){throw {code:'images_unavailable'};};
+  f.json=async function(prompt,o){
+    var sig=o&&o.signal,file=o&&o.images&&o.images[0],b64;
+    try{b64=await fileToJpegB64(file);}catch(e){throw {code:'image_rejected'};}
+    var r;
+    try{r=await fetch(API_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({image:b64,mediaType:'image/jpeg',lang:(typeof LANG!=='undefined'?LANG:'kk')}),signal:sig});}
+    catch(e){if(e&&e.name==='AbortError')throw {code:'cancelled'};throw {code:'images_unavailable'};}
+    if(r.status===429)throw {code:'rate_limited'};
+    if(r.status===400)throw {code:'image_rejected'};
+    if(!r.ok)throw {code:'failed'};
+    return await r.json();
+  };
+  f.limits=async function(){return {images:{mediaTypes:['image/*']}};};
+  return f;
+}
+
+/* ---------- capabilities ---------- */
+(async function(){
+  try{
+    if(window.claude&&window.claude.use){
+      var s=await window.claude.use('sample');
+      if(s){
+        var l=await s.limits().catch(function(){return null;});
+        sampleFn=s;imgLimits=l;
+      }
+    }
+  }catch(e){}
+  if(!sampleFn&&/^https?:/.test(location.protocol)){
+    try{
+      var pr=await fetch(API_URL,{method:'GET'});
+      var pj=pr.ok?await pr.json():null;
+      if(pj&&pj.ok){sampleFn=serverSample();imgLimits=await sampleFn.limits();}
+    }catch(e){}
+  }
+  aiProbed=true;
+  if(view==='add'&&add.phase==='idle')render();
+})();
+})();
+</script>
+
+</html>
