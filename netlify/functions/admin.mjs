@@ -16,7 +16,11 @@ export default async (req) => {
     const store = getStore({ name: 'densau-pilot', consistency: 'strong' });
     const { blobs } = await store.list({ prefix: 'p-' });
     const recs = (await Promise.all(blobs.map(b => store.get(b.key, { type: 'json' }).catch(() => null)))).filter(Boolean);
-    return json({ ok: true, ...summarize(recs) });
+    const fl = (await store.list({ prefix: 'f-' })).blobs;
+    const fr = (await Promise.all(fl.map(b => store.get(b.key, { type: 'json' }).catch(() => null)))).filter(Boolean);
+    const now = Date.now();
+    const fam = { created: fr.length, active: fr.filter(x => x.exp > now).length, viewed: fr.filter(x => (x.views || 0) > 0).length, views: fr.reduce((a, x) => a + (x.views || 0), 0) };
+    return json({ ok: true, ...summarize(recs), fam });
   } catch (err) {
     return json({ ok: false, error: 'store' }, 500);
   }

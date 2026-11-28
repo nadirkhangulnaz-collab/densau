@@ -1,5 +1,5 @@
 // Pure logic for the DenSau pilot counters (no I/O, easy to test).
-const EVENTS = new Set(['visit','demo','pilot_start','sync','subview','paytry','want','preorder','feedback','report','ics','delete']);
+const EVENTS = new Set(['visit','demo','pilot_start','sync','subview','paytry','want','preorder','feedback','report','ics','delete','family']);
 const num = (v, max = 100000) => { v = Number(v); return Number.isFinite(v) ? Math.max(0, Math.min(max, Math.round(v))) : 0; };
 const str = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u001f<>]/g, ' ').trim().slice(0, n);
 const dayKey = (t) => new Date(t).toISOString().slice(0, 10);
@@ -34,6 +34,7 @@ export function applyEvent(rec, e, now = Date.now()) {
   if (e.evt === 'paytry') r.flags.paytry = true;
   if (e.evt === 'want') r.flags.want = true;
   if (e.evt === 'ics') r.flags.ics = true;
+  if (e.evt === 'family') r.flags.family = true;
   if (e.evt === 'report') r.flags.report = true;
   if (e.mode === 'pilot' && ['pilot_start', 'sync', 'want', 'preorder', 'report', 'ics'].includes(e.evt)) {
     r.stats = { day: e.day, planned: e.planned, taken: e.taken, rel: e.rel, meds: e.meds, hasRel: e.hasRel };
@@ -45,7 +46,7 @@ export function applyEvent(rec, e, now = Date.now()) {
 }
 
 export function summarize(records) {
-  const t = { visitors: 0, demo: 0, pilotStarted: 0, pilotActive: 0, withRelative: 0, subview: 0, paytry: 0, want: 0, preorder: 0, ics: 0, report: 0, feedbackCount: 0, feedbackAvg: 0, planned: 0, taken: 0, rel: 0, adherence: 0 };
+  const t = { visitors: 0, demo: 0, pilotStarted: 0, pilotActive: 0, withRelative: 0, subview: 0, paytry: 0, want: 0, preorder: 0, ics: 0, family: 0, report: 0, feedbackCount: 0, feedbackAvg: 0, planned: 0, taken: 0, rel: 0, adherence: 0 };
   const byDay = {}; const pilots = []; const waitlist = []; const feedback = []; let rsum = 0;
   for (const r of records) {
     t.visitors++;
@@ -64,6 +65,7 @@ export function summarize(records) {
     if (f.want) t.want++;
     if (f.preorder) t.preorder++;
     if (f.ics) t.ics++;
+    if (f.family) t.family++;
     if (f.report) t.report++;
     if (r.preorder) waitlist.push({ code: r.pid.slice(0, 6).toUpperCase(), ...r.preorder });
     if (r.feedback) { t.feedbackCount++; rsum += r.feedback.rate || 0; feedback.push({ code: r.pid.slice(0, 6).toUpperCase(), ...r.feedback }); }
@@ -75,4 +77,21 @@ export function summarize(records) {
   t.feedbackAvg = rated ? Math.round(feedback.reduce((a, x) => a + (x.rate || 0), 0) / rated * 10) / 10 : 0;
   pilots.sort((a, b) => b.last - a.last); waitlist.sort((a, b) => b.ts - a.ts); feedback.sort((a, b) => b.ts - a.ts);
   return { totals: t, byDay, pilots, waitlist, feedback, generated: Date.now() };
+}
+
+const hm = (v) => (/^\d{2}:\d{2}$/.test(String(v)) ? String(v) : '');
+const ymd = (v) => (/^\d{4}-\d{2}-\d{2}$/.test(String(v)) ? String(v) : '');
+export function sanitizeFamily(d) {
+  if (!d || typeof d !== 'object') return null;
+  const date = ymd(d.date);
+  if (!date) return null;
+  const show = !!d.show;
+  const doses = (Array.isArray(d.doses) ? d.doses : []).slice(0, 24).map((x) => ({
+    t: hm(x && x.t) || '00:00', n: show ? str(x && x.n, 70) : '', s: x && x.s ? 1 : 0,
+    at: hm(x && x.at), by: x && x.by === 'rel' ? 'rel' : 'self',
+  }));
+  const week = (Array.isArray(d.week) ? d.week : []).slice(0, 7)
+    .map((x) => ({ d: ymd(x && x.d), p: num(x && x.p, 50), t: num(x && x.t, 50) })).filter((x) => x.d);
+  const tzo = Math.max(-720, Math.min(840, Math.round(Number(d.tzo) || 0)));
+  return { name: str(d.name, 40), show, date, tzo, doses, week };
 }

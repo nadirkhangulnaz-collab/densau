@@ -45,10 +45,10 @@ function tbl(el,head,rows){el.innerHTML='<thead><tr>'+head.map(function(h){retur
 function render(){
   $('login').hidden=true;$('dash').hidden=false;var t=D.totals;
   $('gen').textContent='Жаңартылды: '+dt(D.generated);
-  var steps=[['Кіргендер',t.visitors],['Пилот бастады',t.pilotStarted],['Дәріні қолданды (≥1 іштім)',t.pilotActive],['Premium бөлімін ашты',t.subview],['Демо төлем басты',t.paytry],['Premium қажет',t.want],['Тізімге жазылды (телефон)',t.preorder]];
+  var steps=[['Кіргендер',t.visitors],['Пилот бастады',t.pilotStarted],['Дәріні қолданды (≥1 іштім)',t.pilotActive],['Туыс сілтемесін жасады',D.fam.created],['Туыс сілтемені ашты',D.fam.viewed],['Premium бөлімін ашты',t.subview],['Демо төлем басты',t.paytry],['Premium қажет',t.want],['Тізімге жазылды (телефон)',t.preorder]];
   var mx=Math.max(1,t.visitors);
   $('fun').innerHTML=steps.map(function(s){return'<div class="fr"><span>'+s[0]+'</span><div class="bar"><i style="width:'+Math.round(s[1]/mx*100)+'%"></i></div><b>'+s[1]+'</b></div>'}).join('');
-  var k=[['Қабылдау пайызы',t.adherence+'%'],['Жоспарланған доза',t.planned],['Ішілген доза',t.taken],['Туыс растаған',t.rel],['Туыс қосқандар',t.withRelative],['Күнтізбеге қосқандар',t.ics],['Есеп жасағандар',t.report],['Орташа баға (1–5)',t.feedbackAvg||'—']];
+  var k=[['Қабылдау пайызы',t.adherence+'%'],['Жоспарланған доза',t.planned],['Ішілген доза',t.taken],['Туыс растаған',t.rel],['Туыс қосқандар',t.withRelative],['Күнтізбеге қосқандар',t.ics],['Есеп жасағандар',t.report],['Орташа баға (1–5)',t.feedbackAvg||'—'],['Туыс көрген рет',D.fam.views]];
   $('kp').innerHTML=k.map(function(x){return'<div class="k"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join('');
   var days=Object.keys(D.byDay).sort().reverse();
   tbl($('days'),['Күні','Кірген','Пилот бастаған'],days.map(function(d){return[d,D.byDay[d].visitors,D.byDay[d].pilotStarts]}));
